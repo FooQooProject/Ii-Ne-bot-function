@@ -1,0 +1,1 @@
+Main-Class: com.fooqoo56.iine.bot.function.IiNeBotFunctionApplication
