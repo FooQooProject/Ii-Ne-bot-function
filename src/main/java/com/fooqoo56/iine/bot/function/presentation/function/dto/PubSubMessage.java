@@ -3,6 +3,7 @@ package com.fooqoo56.iine.bot.function.presentation.function.dto;
 import java.io.Serializable;
 import java.util.Map;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -13,6 +14,7 @@ import org.springframework.lang.NonNull;
  */
 @Getter
 @ToString
+@EqualsAndHashCode
 @RequiredArgsConstructor
 @Builder
 public class PubSubMessage implements Serializable {

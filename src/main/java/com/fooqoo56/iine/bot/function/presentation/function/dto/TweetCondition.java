@@ -7,13 +7,15 @@ import java.io.Serializable;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 
 @Getter
+@ToString
+@EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
-@EqualsAndHashCode
 public class TweetCondition implements Serializable {
 
     private static final long serialVersionUID = 756620699363145836L;
@@ -40,7 +42,7 @@ public class TweetCondition implements Serializable {
     private final Long friendsCount;
 
     /**
-     * Json生成.
+     * Json生成
      *
      * @param query          クエリ
      * @param retweetCount   リツイート数
