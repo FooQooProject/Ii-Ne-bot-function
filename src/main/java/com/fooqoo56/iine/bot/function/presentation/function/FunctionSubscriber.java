@@ -49,7 +49,7 @@ public class FunctionSubscriber {
         // ツイートのいいね実行 & 同期処理
         final Boolean isFavoriteSuccessFlag = favoriteService.favoriteTweet(tweetCondition).block();
 
-        // NullCheck&いいねが失敗した場合、例外を発生させる
+        // NullCheck or いいねが失敗した場合、例外を発生させる
         if (Objects.isNull(isFavoriteSuccessFlag) || BooleanUtils.isFalse(isFavoriteSuccessFlag)) {
             throw new NotSuccessFavoriteException("ツイートをいいねできませんでした");
         }
@@ -75,7 +75,7 @@ public class FunctionSubscriber {
     }
 
     /**
-     * メッセージをデコードする.
+     * メッセージをデコードする
      *
      * @param message pubsubメッセージ
      * @return デコードされたdataパラメータ

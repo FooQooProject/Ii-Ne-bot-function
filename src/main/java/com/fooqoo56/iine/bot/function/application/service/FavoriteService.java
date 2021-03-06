@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+/**
+ * いいえを実施するサービスクラス
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor

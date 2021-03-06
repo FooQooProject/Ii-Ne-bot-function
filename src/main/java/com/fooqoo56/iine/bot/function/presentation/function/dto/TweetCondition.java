@@ -11,6 +11,9 @@ import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 
+/**
+ * ツイート条件クラス
+ */
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -26,25 +29,40 @@ public class TweetCondition implements Serializable {
     public static final String PARAM_FOLLOWERS_COUNT = "followersCount";
     public static final String PARAM_FRIENDS_COUNT = "friendsCount";
 
+    /**
+     * キーワード
+     */
     @NonNull
     private final String query;
 
+    /**
+     * リツイート数
+     */
     @NonNull
     private final Long retweetCount;
 
+    /**
+     * いいね数
+     */
     @NonNull
     private final Long favoriteCount;
 
+    /**
+     * フォロワー数
+     */
     @NonNull
     private final Long followersCount;
 
+    /**
+     * フォロー数
+     */
     @NonNull
     private final Long friendsCount;
 
     /**
      * Json生成
      *
-     * @param query          クエリ
+     * @param query          キーワード
      * @param retweetCount   リツイート数
      * @param favoriteCount  いいね数
      * @param followersCount フォロワー数
@@ -52,7 +70,7 @@ public class TweetCondition implements Serializable {
      */
     @JsonCreator
     public TweetCondition(
-            @JsonProperty(PARAM_QUERY) final String query,
+            @NonNull @JsonProperty(PARAM_QUERY) final String query,
             @NonNull @JsonProperty(PARAM_RETWEET_COUNT) final Long retweetCount,
             @NonNull @JsonProperty(PARAM_FAVORITE_COUNT) final Long favoriteCount,
             @NonNull @JsonProperty(PARAM_FOLLOWERS_COUNT) final Long followersCount,
