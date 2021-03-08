@@ -1,6 +1,6 @@
 package com.fooqoo56.iine.bot.function.application.service
 
-import com.fooqoo56.iine.bot.function.application.sharedservice.TwitterService
+import com.fooqoo56.iine.bot.function.application.sharedservice.TwitterSharedService
 import com.fooqoo56.iine.bot.function.domain.model.Tweet
 import com.fooqoo56.iine.bot.function.domain.model.User
 import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualification
@@ -10,7 +10,7 @@ import spock.lang.Specification
 class FavoriteServiceSpec extends Specification {
 
     private FavoriteService favoriteService
-    private TwitterService twitterService = Mock(TwitterService)
+    private TwitterSharedService twitterService = Mock(TwitterSharedService)
 
     final setup() {
         favoriteService = new FavoriteService(twitterService)

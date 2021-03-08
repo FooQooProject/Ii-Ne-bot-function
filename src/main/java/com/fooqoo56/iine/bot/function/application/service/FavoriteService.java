@@ -1,11 +1,12 @@
 package com.fooqoo56.iine.bot.function.application.service;
 
-import com.fooqoo56.iine.bot.function.application.sharedservice.TwitterService;
+import com.fooqoo56.iine.bot.function.application.sharedservice.TwitterSharedService;
 import com.fooqoo56.iine.bot.function.domain.model.Qualification;
 import com.fooqoo56.iine.bot.function.domain.model.Tweet;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest;
 import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualification;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class FavoriteService {
     private static final int MIN_STATUS_QUALIFICATION = 100;
     private static final boolean FOLLOWER_QUALIFICATION = false;
 
-    private final TwitterService twitterService;
+    private final TwitterSharedService twitterSharedService;
 
     /**
      * ツイート実行
@@ -39,7 +40,7 @@ public class FavoriteService {
 
         final TweetRequest request = TweetRequest.buildTweetRequest(qualification);
 
-        return twitterService.findTweet(request)
+        return twitterSharedService.findTweet(request)
                 .filter(tweet -> isQualifiedTweet(tweet, qualification))
                 .collectList()
                 .thenReturn(Boolean.FALSE);
@@ -67,7 +68,6 @@ public class FavoriteService {
                 .build();
     }
 
-
     /**
      * ツイートが要件に合致しているか
      *
@@ -78,53 +78,51 @@ public class FavoriteService {
     private boolean isQualifiedTweet(final Tweet tweet,
                                      final Qualification qualification) {
         // ツイートにいいね要件のクエリが含まれているか
-        if (!tweet.getText().contains(qualification.getQuery())) {
-            return false;
-        }
+        final boolean isContainQuery = tweet.getText().contains(qualification.getQuery());
 
         // センシティブ要件
-        else if (qualification.isSensitive() != tweet.isSensitive()) {
-            return false;
-        }
+        final boolean isQualifiedSensitive = qualification.isSensitive() == tweet.isSensitive();
 
         // 引用要件
-        else if (qualification.isQuote() != tweet.isQuote()) {
-            return false;
-        }
+        final boolean isQualifiedQuote = qualification.isQuote() == tweet.isQuote();
 
         // リプライ要件
-        else if (qualification.isReply() != tweet.isReply()) {
-            return false;
-        }
+        final boolean isQualifiedReply = qualification.isReply() == tweet.isReply();
 
         // フォローユーザ要件
-        else if (qualification.isFollow() != tweet.getUser().isFollow()) {
-            return false;
-        }
+        final boolean isQualifiedFollow = qualification.isFollow() == tweet.getUser().isFollow();
 
         // リツイート数要件
-        else if (isLessThanQualification(tweet.getRetweetCount(),
-                qualification.getMinRetweetCount())) {
-            return false;
-        }
+        final boolean isQualifiedRetweetCount =
+                isGraterThanEqualQualification(tweet.getRetweetCount(),
+                        qualification.getMinRetweetCount());
 
         // いいね数要件
-        else if (isLessThanQualification(tweet.getFavoriteCount(),
-                qualification.getMinFavoriteCount())) {
-            return false;
-        }
+        final boolean isQualifiedFavoriteCount =
+                isGraterThanEqualQualification(tweet.getFavoriteCount(),
+                        qualification.getMinFavoriteCount());
 
         // フォロワー数要件
-        else if (isLessThanQualification(tweet.getUser().getFollowersCount(),
-                qualification.getMinFollowersCount())) {
-            return false;
-        }
+        final boolean isQualifiedFollowersCount =
+                isGraterThanEqualQualification(tweet.getUser().getFollowersCount(),
+                        qualification.getMinFollowersCount());
 
         // ツイート数要件
-        else {
-            return !isLessThanQualification(tweet.getUser().getStatusesCount(),
-                    qualification.getMinStatusesCount());
-        }
+        final boolean isQualifiedStatusesCount =
+                isGraterThanEqualQualification(tweet.getUser().getStatusesCount(),
+                        qualification.getMinStatusesCount());
+
+        // 全ての要件の論理積を返す
+        return BooleanUtils.and(new boolean[] {
+                isContainQuery,
+                isQualifiedSensitive,
+                isQualifiedReply,
+                isQualifiedFollow,
+                isQualifiedQuote,
+                isQualifiedRetweetCount,
+                isQualifiedFavoriteCount,
+                isQualifiedFollowersCount,
+                isQualifiedStatusesCount});
     }
 
     /**
@@ -134,9 +132,9 @@ public class FavoriteService {
      * @param qualification 要件
      * @return 要件より値が低い場合、trueを返す
      */
-    private boolean isLessThanQualification(final Integer target,
-                                            final Integer qualification) {
+    private boolean isGraterThanEqualQualification(final Integer target,
+                                                   final Integer qualification) {
         // left > right -> +1, left < right -> -1, left == right => 0
-        return NumberUtils.compare(target, qualification) < 0;
+        return NumberUtils.compare(target, qualification) >= 0;
     }
 }

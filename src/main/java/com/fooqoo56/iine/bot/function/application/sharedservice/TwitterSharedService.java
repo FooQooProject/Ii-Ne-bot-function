@@ -12,9 +12,12 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+/**
+ * TwitterAPIの共通サービス層
+ */
 @Service
 @RequiredArgsConstructor
-public class TwitterService {
+public class TwitterSharedService {
 
     private final TwitterRepository twitterRepository;
 
