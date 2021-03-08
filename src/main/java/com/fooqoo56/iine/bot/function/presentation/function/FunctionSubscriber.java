@@ -5,19 +5,17 @@ import com.fooqoo56.iine.bot.function.application.service.FavoriteService;
 import com.fooqoo56.iine.bot.function.exception.NotSuccessFavoriteException;
 import com.fooqoo56.iine.bot.function.exception.NotSuccessMappingException;
 import com.fooqoo56.iine.bot.function.presentation.function.dto.PubSubMessage;
-import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetCondition;
+import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualification;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 
-@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class FunctionSubscriber {
@@ -31,6 +29,7 @@ public class FunctionSubscriber {
      * @return PubSubMessageを引数に持つ関数
      */
     @Bean
+    @NonNull
     public Consumer<PubSubMessage> pubSubFunction() {
         return this::favoriteTweetFunction;
     }
@@ -45,9 +44,9 @@ public class FunctionSubscriber {
     @NonNull
     private Boolean favoriteTweetFunction(final PubSubMessage message)
             throws NotSuccessFavoriteException {
-        final TweetCondition tweetCondition = mapTweetCondition(getDecodedMessage(message));
+        final TweetQualification tweetQualification = mapTweetCondition(getDecodedMessage(message));
         // ツイートのいいね実行 & 同期処理
-        final Boolean isFavoriteSuccessFlag = favoriteService.favoriteTweet(tweetCondition).block();
+        final Boolean isFavoriteSuccessFlag = favoriteService.favoriteTweet(tweetQualification).block();
 
         // NullCheck or いいねが失敗した場合、例外を発生させる
         if (Objects.isNull(isFavoriteSuccessFlag) || BooleanUtils.isFalse(isFavoriteSuccessFlag)) {
@@ -65,10 +64,10 @@ public class FunctionSubscriber {
      * @throws NotSuccessMappingException マッピングに失敗した場合の例外
      */
     @NonNull
-    private TweetCondition mapTweetCondition(final String data)
+    private TweetQualification mapTweetCondition(final String data)
             throws NotSuccessMappingException {
         try {
-            return objectMapper.readValue(data, TweetCondition.class);
+            return objectMapper.readValue(data, TweetQualification.class);
         } catch (final Exception exception) {
             throw new NotSuccessMappingException(exception);
         }

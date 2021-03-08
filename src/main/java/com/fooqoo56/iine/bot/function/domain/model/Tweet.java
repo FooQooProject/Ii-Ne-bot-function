@@ -1,22 +1,45 @@
 package com.fooqoo56.iine.bot.function.domain.model;
 
-public class Tweet {
+import java.io.Serializable;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 
-    private String id;
+/**
+ * ツイート
+ */
+@Getter
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@Builder
+public class Tweet implements Serializable {
 
-    private String text;
+    private static final long serialVersionUID = -5203574052011105305L;
 
-    private Long retweetCount;
+    @NonNull
+    private final String id;
 
-    private Long favoriteCount;
+    @NonNull
+    private final String text;
 
-    private Boolean favoriteFlag;
+    @NonNull
+    private final Integer retweetCount;
 
-    private Boolean retweetFlag;
+    @NonNull
+    private final Integer favoriteCount;
 
-    private Boolean sensitiveFlag;
+    @NonNull
+    private final User user;
 
-    private Boolean quoteFlag;
+    private final boolean favorite;
 
-    private String inReplyToStatusId;
+    private final boolean retweet;
+
+    private final boolean sensitive;
+
+    private final boolean quote;
+
+    private final boolean reply;
 }

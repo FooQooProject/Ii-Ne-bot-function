@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 
 /**
@@ -19,9 +18,9 @@ import org.springframework.lang.NonNull;
 @EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
-public class TweetCondition implements Serializable {
+public class TweetQualification implements Serializable {
 
-    private static final long serialVersionUID = 756620699363145836L;
+    private static final Long serialVersionUID = 756620699363145836L;
 
     public static final String PARAM_QUERY = "query";
     public static final String PARAM_RETWEET_COUNT = "retweetCount";
@@ -39,25 +38,25 @@ public class TweetCondition implements Serializable {
      * リツイート数
      */
     @NonNull
-    private final Long retweetCount;
+    private final Integer retweetCount;
 
     /**
      * いいね数
      */
     @NonNull
-    private final Long favoriteCount;
+    private final Integer favoriteCount;
 
     /**
      * フォロワー数
      */
     @NonNull
-    private final Long followersCount;
+    private final Integer followersCount;
 
     /**
      * フォロー数
      */
     @NonNull
-    private final Long friendsCount;
+    private final Integer friendsCount;
 
     /**
      * Json生成
@@ -69,14 +68,14 @@ public class TweetCondition implements Serializable {
      * @param friendsCount   フォロー数
      */
     @JsonCreator
-    public TweetCondition(
+    public TweetQualification(
             @NonNull @JsonProperty(PARAM_QUERY) final String query,
-            @NonNull @JsonProperty(PARAM_RETWEET_COUNT) final Long retweetCount,
-            @NonNull @JsonProperty(PARAM_FAVORITE_COUNT) final Long favoriteCount,
-            @NonNull @JsonProperty(PARAM_FOLLOWERS_COUNT) final Long followersCount,
-            @NonNull @JsonProperty(PARAM_FRIENDS_COUNT) final Long friendsCount
+            @NonNull @JsonProperty(PARAM_RETWEET_COUNT) final Integer retweetCount,
+            @NonNull @JsonProperty(PARAM_FAVORITE_COUNT) final Integer favoriteCount,
+            @NonNull @JsonProperty(PARAM_FOLLOWERS_COUNT) final Integer followersCount,
+            @NonNull @JsonProperty(PARAM_FRIENDS_COUNT) final Integer friendsCount
     ) {
-        this.query = StringUtils.defaultString(query);
+        this.query = query;
         this.retweetCount = retweetCount;
         this.favoriteCount = favoriteCount;
         this.followersCount = followersCount;

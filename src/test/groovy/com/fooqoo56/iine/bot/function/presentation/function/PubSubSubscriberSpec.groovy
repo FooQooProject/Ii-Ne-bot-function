@@ -5,7 +5,7 @@ import com.fooqoo56.iine.bot.function.application.service.FavoriteService
 import com.fooqoo56.iine.bot.function.exception.NotSuccessFavoriteException
 import com.fooqoo56.iine.bot.function.exception.NotSuccessMappingException
 import com.fooqoo56.iine.bot.function.presentation.function.dto.PubSubMessage
-import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetCondition
+import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualification
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 
@@ -63,7 +63,7 @@ class PubSubSubscriberSpec extends Specification {
         final data = "{\"query\": \"Next.js\", \"retweetCount\": 0, \"favoriteCount\": 3, \"followersCount\": 10, \"friendsCount\": 10}"
 
         // 期待値を生成
-        final expected = TweetCondition.builder()
+        final expected = TweetQualification.builder()
                 .query("Next.js")
                 .retweetCount(0)
                 .favoriteCount(3)

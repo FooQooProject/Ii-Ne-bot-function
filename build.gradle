@@ -40,7 +40,8 @@ dependencies {
             // google cloud function for test
             'com.google.cloud.functions:functions-framework-api:1.0.1',
             // commons-lang3
-            'org.apache.commons:commons-lang3:3.11'
+            'org.apache.commons:commons-lang3:3.11',
+            "com.squareup.okhttp3:okhttp:4.9.0"
     )
 
     compileOnly 'org.projectlombok:lombok'

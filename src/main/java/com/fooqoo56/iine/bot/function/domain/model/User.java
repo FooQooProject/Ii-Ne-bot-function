@@ -1,22 +1,44 @@
 package com.fooqoo56.iine.bot.function.domain.model;
 
-public class User {
+import java.io.Serializable;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 
-    private String id;
+/**
+ * ユーザ
+ */
+@Getter
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@Builder
+public class User implements Serializable {
 
-    private Long followersCount;
+    private static final long serialVersionUID = 6732265885878037807L;
 
-    private Long friendsCount;
+    @NonNull
+    private final String id;
 
-    private Long listedCount;
+    @NonNull
+    private final Integer followersCount;
 
-    private Long favouritesCount;
+    @NonNull
+    private final Integer friendsCount;
 
-    private Long statusesCount;
+    @NonNull
+    private final Integer listedCount;
 
-    private Boolean following;
+    @NonNull
+    private final Integer favouritesCount;
 
-    private Boolean defaultProfileFlag;
+    @NonNull
+    private final Integer statusesCount;
 
-    private Boolean defaultProfileImageFlag;
+    private final boolean follow;
+
+    private final boolean defaultProfile;
+
+    private final boolean defaultProfileImage;
 }
