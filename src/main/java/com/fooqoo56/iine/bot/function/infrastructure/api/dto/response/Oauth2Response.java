@@ -23,10 +23,16 @@ public class Oauth2Response implements Serializable {
 
     private static final long serialVersionUID = 670574284955441461L;
 
+    /**
+     * Token Type
+     */
     @JsonProperty("token_type")
     @NonNull
     private String tokenType;
 
+    /**
+     * Access Token
+     */
     @JsonProperty("access_token")
     @NonNull
     private String accessToken;

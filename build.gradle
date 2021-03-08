@@ -91,6 +91,8 @@ tasks.register("function", JavaExec) {
             '--port', project.findProperty('function.port') ?: 8080
     )
     doFirst {
-        args('--classpath', files(configurations.runtimeClasspath, sourceSets.main.output).asPath)
+        args(
+                '--classpath', files(configurations.runtimeClasspath, sourceSets.main.output).asPath
+        )
     }
 }

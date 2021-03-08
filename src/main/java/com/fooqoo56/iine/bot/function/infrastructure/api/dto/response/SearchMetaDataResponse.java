@@ -25,6 +25,9 @@ public class SearchMetaDataResponse implements Serializable {
 
     private static final long serialVersionUID = 47033691799811374L;
 
+    /**
+     * 次のカーソルを取得するクエリパラメータ
+     */
     @JsonProperty("next_results")
     @NonNull
     private String nextResults;

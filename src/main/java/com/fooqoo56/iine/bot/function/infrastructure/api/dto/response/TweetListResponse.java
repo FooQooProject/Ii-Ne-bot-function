@@ -28,10 +28,16 @@ public class TweetListResponse implements Serializable {
 
     private static final String DEFAULT_NEXT_MAX_ID = "-1";
 
+    /**
+     * ツイートのリスト
+     */
     @JsonProperty("statuses")
     @NonNull
     private List<TweetResponse> statuses;
 
+    /**
+     * ツイッター検索APIのレスポンスに含まれるメタデータ
+     */
     @JsonProperty("search_metadata")
     @NonNull
     private SearchMetaDataResponse searchMetaDataResponse;

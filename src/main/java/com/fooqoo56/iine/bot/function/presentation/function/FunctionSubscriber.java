@@ -11,11 +11,13 @@ import java.util.Base64;
 import java.util.Objects;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class FunctionSubscriber {
@@ -44,16 +46,19 @@ public class FunctionSubscriber {
     @NonNull
     private Boolean favoriteTweetFunction(final PubSubMessage message)
             throws NotSuccessFavoriteException {
+
         final TweetQualification tweetQualification = mapTweetCondition(getDecodedMessage(message));
         // ツイートのいいね実行 & 同期処理
-        final Boolean isFavoriteSuccessFlag = favoriteService.favoriteTweet(tweetQualification).block();
+        final Boolean isSucceedFavorite =
+                favoriteService.favoriteQualifiedTweet(tweetQualification).block();
 
         // NullCheck or いいねが失敗した場合、例外を発生させる
-        if (Objects.isNull(isFavoriteSuccessFlag) || BooleanUtils.isFalse(isFavoriteSuccessFlag)) {
-            throw new NotSuccessFavoriteException("ツイートをいいねできませんでした");
+        if (Objects.isNull(isSucceedFavorite) || BooleanUtils.isFalse(isSucceedFavorite)) {
+            log.error("ツイートをいいねできませんでした: " + tweetQualification);
+            return Boolean.FALSE;
         }
 
-        return isFavoriteSuccessFlag;
+        return Boolean.TRUE;
     }
 
     /**

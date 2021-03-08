@@ -16,11 +16,14 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
+/**
+ * WebClientの設定クラス
+ */
 @Configuration
 public class WebClientConfig {
 
     /**
-     * connector.
+     * connector
      */
     private static final BiFunction<Duration, Duration, ReactorClientHttpConnector> CONNECTOR =
             (connectTimeout, readTimeout) -> new ReactorClientHttpConnector(HttpClient.create()
@@ -29,7 +32,7 @@ public class WebClientConfig {
                     .resolver(DefaultAddressResolverGroup.INSTANCE));
 
     /**
-     * strategy.
+     * strategy
      */
     private static final Function<Integer, ExchangeStrategies> STRATEGY =
             (maxInMemorySize) -> ExchangeStrategies.builder()
@@ -39,7 +42,7 @@ public class WebClientConfig {
                     .build();
 
     /**
-     * ツイート検索APIの設定.
+     * ツイート検索APIの設定
      *
      * @return TwitterSetting
      */
@@ -51,7 +54,29 @@ public class WebClientConfig {
     }
 
     /**
-     * OauthAPIの設定.
+     * ツイートいいねAPIの設定
+     *
+     * @return TwitterSetting
+     */
+    @Bean
+    @ConfigurationProperties(prefix = "extension.api.twitter.favorite")
+    public ApiSetting twitterFavoriteApiSetting() {
+        return new ApiSetting();
+    }
+
+    /**
+     * ツイート取得APIの設定
+     *
+     * @return TwitterSetting
+     */
+    @Bean
+    @ConfigurationProperties(prefix = "extension.api.twitter.lookup")
+    public ApiSetting twitterLookupApiSetting() {
+        return new ApiSetting();
+    }
+
+    /**
+     * OauthAPIの設定
      *
      * @return TwitterSetting
      */
@@ -62,8 +87,9 @@ public class WebClientConfig {
     }
 
     /**
-     * 検索APIクライアント.
+     * 検索APIクライアント
      *
+     * @param apiSetting API設定
      * @return WebClient
      */
     @Bean
@@ -80,6 +106,48 @@ public class WebClientConfig {
                 .clientConnector(connector)
                 .build();
     }
+
+    /**
+     * いいねAPIクライアント
+     *
+     * @param apiSetting API設定
+     * @return WebClient
+     */
+    @Bean
+    @NonNull
+    public WebClient twitterFavoriteClient(
+            @Qualifier(value = "twitterFavoriteApiSetting") final ApiSetting apiSetting) {
+
+        final ReactorClientHttpConnector connector = CONNECTOR
+                .apply(apiSetting.getConnectTimeout(), apiSetting.getReadTimeout());
+
+        return WebClient.builder()
+                .baseUrl(apiSetting.getBaseUrl())
+                .exchangeStrategies(STRATEGY.apply(apiSetting.getMaxInMemorySize()))
+                .clientConnector(connector)
+                .build();
+    }
+
+    /**
+     * 取得APIクライアント
+     *
+     * @param apiSetting API設定
+     * @return WebClient
+     */
+    @Bean
+    public WebClient twitterLookupClient(
+            @Qualifier(value = "twitterLookupApiSetting") final ApiSetting apiSetting) {
+
+        final ReactorClientHttpConnector connector = CONNECTOR
+                .apply(apiSetting.getConnectTimeout(), apiSetting.getReadTimeout());
+
+        return WebClient.builder()
+                .baseUrl(apiSetting.getBaseUrl())
+                .exchangeStrategies(STRATEGY.apply(apiSetting.getMaxInMemorySize()))
+                .clientConnector(connector)
+                .build();
+    }
+
 
     /**
      * Bearer APIのWebClient取得

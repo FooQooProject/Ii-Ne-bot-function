@@ -27,24 +27,45 @@ public class TweetRequest implements Serializable {
 
     private static final String DEFAULT_MAX_ID = "-1";
 
+    /**
+     * 検索クエリ
+     */
     @NonNull
     private final String query;
 
+    /**
+     * 言語
+     */
     @NonNull
     private final Lang lang = Lang.JA;
 
+    /**
+     * 検索結果の設定
+     */
     @NonNull
     private final ResultType resultType = ResultType.RECENT;
 
+    /**
+     * 最大数
+     */
     @NonNull
     private final Integer count = 100;
 
+    /**
+     * entityを含める場合、true
+     */
     @NonNull
     private final Boolean includeEntitiesFlag = false;
 
+    /**
+     * 現在時刻
+     */
     @NonNull
     private final LocalDate until = LocalDate.now();
 
+    /**
+     * max_idの指定
+     */
     @NonNull
     private final String maxId;
 
