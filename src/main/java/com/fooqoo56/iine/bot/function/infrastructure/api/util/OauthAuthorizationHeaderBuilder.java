@@ -25,24 +25,45 @@ public class OauthAuthorizationHeaderBuilder implements Serializable {
 
     private static final long serialVersionUID = -8790302082606292722L;
 
+    /**
+     * Access Token Secret
+     */
     @NonNull
     private final String consumerSecret;
 
+    /**
+     * HTTPメソッド
+     */
     @NonNull
     private final String method;
 
+    /**
+     * クエリパラメータのマップ
+     */
     @NonNull
     private final Map<String, String> queryParameters;
 
+    /**
+     * API Key Secret
+     */
     @NonNull
     private final String tokenSecret;
 
+    /**
+     * アクセスするAPIのURL
+     */
     @NonNull
     private final String url;
 
+    /**
+     * API Key
+     */
     @NonNull
     private final String consumerKey;
 
+    /**
+     * Access Token
+     */
     @NonNull
     private final String accessToken;
 
