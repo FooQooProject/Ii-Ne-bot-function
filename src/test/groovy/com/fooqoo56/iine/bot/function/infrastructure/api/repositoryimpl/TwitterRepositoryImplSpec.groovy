@@ -10,6 +10,9 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 
+/**
+ * TwitterRepositoryのテスト
+ */
 class TwitterRepositoryImplSpec extends Specification {
 
     private MockWebServer mockWebServer

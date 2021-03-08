@@ -9,6 +9,9 @@ import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualificati
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 
+/**
+ * PubSubSubscriberのテスト
+ */
 class PubSubSubscriberSpec extends Specification {
 
     private FunctionSubscriber sut
@@ -91,7 +94,6 @@ class PubSubSubscriberSpec extends Specification {
 
     final "getDecodedMessage"() {
         given:
-
         // 引数を生成する
         final message = Mock(PubSubMessage) {
             getData() >> "eyJxdWVyeSI6ICJOZXh0LmpzIiwgInJldHdlZXRDb3VudCI6IDAsICJmYXZvcml0ZUNvdW50IjogMywgImZvbGxvd2Vyc0NvdW50IjogMTAsICJmcmllbmRzQ291bnQiOiAxMH0K"

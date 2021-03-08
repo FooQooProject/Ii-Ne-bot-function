@@ -7,6 +7,9 @@ import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualificati
 import reactor.core.publisher.Flux
 import spock.lang.Specification
 
+/**
+ * FavoriteServiceのテスト
+ */
 class FavoriteServiceSpec extends Specification {
 
     private FavoriteService favoriteService
@@ -40,6 +43,11 @@ class FavoriteServiceSpec extends Specification {
         actual == expected
     }
 
+    /**
+     * ツイートのFluxのモックを取得する
+     *
+     * @return ツイートのFlux
+     */
     private final getMockTweetFlux() {
         return Flux.just(
                 Tweet.builder()

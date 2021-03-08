@@ -20,14 +20,12 @@ import org.springframework.lang.NonNull;
 @Builder
 public class TweetQualification implements Serializable {
 
-    private static final long serialVersionUID = 756620699363145836L;
-
     public static final String PARAM_QUERY = "query";
     public static final String PARAM_RETWEET_COUNT = "retweetCount";
     public static final String PARAM_FAVORITE_COUNT = "favoriteCount";
     public static final String PARAM_FOLLOWERS_COUNT = "followersCount";
     public static final String PARAM_FRIENDS_COUNT = "friendsCount";
-
+    private static final long serialVersionUID = 756620699363145836L;
     /**
      * キーワード
      */
