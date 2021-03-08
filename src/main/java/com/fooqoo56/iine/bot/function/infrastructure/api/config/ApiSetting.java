@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.time.Duration;
 import lombok.Data;
 
+/**
+ * API設定値
+ */
 @Data
 public class ApiSetting implements Serializable {
 
