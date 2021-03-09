@@ -7,6 +7,7 @@ import com.fooqoo56.iine.bot.function.infrastructure.api.util.OauthAuthorization
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
@@ -36,7 +37,7 @@ class TwitterRepositoryImplSpec extends Specification {
         apiSetting.setApiSecret("apiSecret")
         apiSetting.setAccessToken("accessToken")
         apiSetting.setAccessTokenSecret("accessTokenSecret")
-        apiSetting.setMaxInMemorySize(1000)
+        apiSetting.setMaxInMemorySize(16777216)
     }
 
     final cleanup() {
@@ -52,7 +53,7 @@ class TwitterRepositoryImplSpec extends Specification {
         final mockResponse = new FileReader("src/test/resources/oauth2.json").text
         mockWebServer.enqueue(
                 new MockResponse()
-                        .setResponseCode(200)
+                        .setResponseCode(HttpStatus.OK.value())
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .setBody(mockResponse))
 
@@ -139,7 +140,7 @@ class TwitterRepositoryImplSpec extends Specification {
         final mockResponse = new FileReader("src/test/resources/favoriteTweet.json").text
         mockWebServer.enqueue(
                 new MockResponse()
-                        .setResponseCode(200)
+                        .setResponseCode(HttpStatus.OK.value())
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .setBody(mockResponse))
 
@@ -170,7 +171,7 @@ class TwitterRepositoryImplSpec extends Specification {
         final mockResponse = new FileReader("src/test/resources/lookupTweet.json").text
         mockWebServer.enqueue(
                 new MockResponse()
-                        .setResponseCode(200)
+                        .setResponseCode(HttpStatus.OK.value())
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .setBody(mockResponse))
 
