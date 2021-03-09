@@ -13,6 +13,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'groovy'
+    id 'com.github.spotbugs' version '4.6.0'
 }
 
 group = 'com.fooqoo56.iine.bot.function'
@@ -64,6 +65,8 @@ dependencies {
             // mock for webflux
             'com.squareup.okhttp3:mockwebserver:4.9.0'
     )
+
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.1'
 }
 
 // bootRun タスクの設定を追加する
@@ -95,4 +98,26 @@ tasks.register("function", JavaExec) {
                 '--classpath', files(configurations.runtimeClasspath, sourceSets.main.output).asPath
         )
     }
+}
+
+spotbugsMain {
+    reports {
+        html {
+            enabled = true
+            destination = file("$buildDir/reports/spotbugs/spotbugs.html")
+            stylesheet = 'fancy-hist.xsl'
+        }
+    }
+    excludeFilter = file('./config/spotbugs_filter.xml')
+}
+
+spotbugsTest {
+    reports {
+        html {
+            enabled = true
+            destination = file("$buildDir/reports/spotbugs/spotbugsTest.html")
+            stylesheet = 'fancy-hist.xsl'
+        }
+    }
+    excludeFilter = file('./config/spotbugs_filter.xml')
 }

@@ -7,12 +7,14 @@ import com.fooqoo56.iine.bot.function.exception.NotSuccessGetOauthHmacSignerExce
 import com.google.api.client.auth.oauth.OAuthHmacSigner;
 import java.io.Serializable;
 import java.security.GeneralSecurityException;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.lang.NonNull;
 import org.springframework.web.util.UriUtils;
 
@@ -82,7 +84,7 @@ public class OauthAuthorizationHeaderBuilder implements Serializable {
         parameters.put("oauth_timestamp", String.valueOf(Instant.now().getEpochSecond()));
         parameters.put("oauth_signature_method", "HMAC-SHA1");
         parameters.put("oauth_version", "1.0");
-        parameters.put("oauth_nonce", String.valueOf(Math.random() * 100000000));
+        parameters.put("oauth_nonce", generateSecretToken());
         parameters.put("oauth_consumer_key", consumerKey);
         parameters.put("oauth_token", accessToken);
 
@@ -153,5 +155,18 @@ public class OauthAuthorizationHeaderBuilder implements Serializable {
         } catch (final GeneralSecurityException e) {
             throw new NotSuccessGetOauthHmacSignerException("OAuth2.0の認証鍵作成に失敗しました");
         }
+    }
+
+    /**
+     * セキュアなTokenを作成する
+     *
+     * @return セキュアなトークン
+     */
+    @NonNull
+    private String generateSecretToken() {
+        final SecureRandom secRandom = new SecureRandom();
+        final byte[] result = new byte[32];
+        secRandom.nextBytes(result);
+        return Hex.encodeHexString(result);
     }
 }
