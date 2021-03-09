@@ -5,6 +5,7 @@ import com.fooqoo56.iine.bot.function.domain.model.Tweet
 import com.fooqoo56.iine.bot.function.domain.model.User
 import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualification
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import spock.lang.Specification
 
 /**
@@ -12,32 +13,37 @@ import spock.lang.Specification
  */
 class FavoriteServiceSpec extends Specification {
 
-    private FavoriteService favoriteService
-    private TwitterSharedService twitterService = Mock(TwitterSharedService)
+    private FavoriteService sut
+    private TwitterSharedService twitterSharedService
 
     final setup() {
-        favoriteService = new FavoriteService(twitterService)
+        twitterSharedService = Mock(TwitterSharedService)
+        sut = new FavoriteService(twitterSharedService)
     }
 
     final "いいねを実行する"() {
         given:
         // mockを作成する
-        twitterService.findTweet(*_) >> getMockTweetFlux()
+        twitterSharedService.findTweet(*_) >> getMockTweetFlux()
+        twitterSharedService.lookUpTweet(*_) >> Flux.fromIterable(getMockTweet())
+        twitterSharedService.favoriteTweet(*_) >> Mono.just(Optional.of(Mock(Tweet)))
+
+        // 処理が複雑なprivateメソッドのみmockを作成する
 
         // 引数を作成する
         final qualification = TweetQualification.builder()
-                .query("Next.js")
+                .query("http")
                 .retweetCount(0)
-                .favoriteCount(3)
-                .followersCount(10)
-                .friendsCount(10)
+                .favoriteCount(0)
+                .followersCount(0)
+                .friendsCount(0)
                 .build()
 
         // 期待値を作成する
-        final expected = Boolean.FALSE
+        final expected = Boolean.TRUE
 
         when:
-        final actual = favoriteService.favoriteTweet(qualification).block()
+        final actual = sut.favoriteQualifiedTweet(qualification).block()
 
         then:
         actual == expected
@@ -48,7 +54,7 @@ class FavoriteServiceSpec extends Specification {
      *
      * @return ツイートのFlux
      */
-    private final getMockTweetFlux() {
+    private static final getMockTweetFlux() {
         return Flux.just(
                 Tweet.builder()
                         .id("967824267948773377")
@@ -95,5 +101,20 @@ class FavoriteServiceSpec extends Specification {
                         .favorite(false)
                         .build()
         )
+    }
+
+    private final getMockTweet() {
+        return [
+                Mock(Tweet) {
+                    isNotFavorite() >> true
+                    getId() >> "id"
+
+                },
+                Mock(Tweet) {
+                    isNotFavorite() >> true
+                    getId() >> "id"
+
+                }
+        ]
     }
 }

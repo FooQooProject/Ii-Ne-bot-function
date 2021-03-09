@@ -2,6 +2,7 @@ package com.fooqoo56.iine.bot.function.infrastructure.api.config;
 
 import java.io.Serializable;
 import java.time.Duration;
+import lombok.Builder;
 import lombok.Data;
 
 /**

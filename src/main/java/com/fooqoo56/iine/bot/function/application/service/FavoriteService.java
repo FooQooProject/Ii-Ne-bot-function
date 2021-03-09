@@ -54,6 +54,7 @@ public class FavoriteService {
                 // いいね要件に合致したツイートのみフィルタリングする
                 .filter(tweet -> isQualifiedTweet(tweet, qualification))
                 .collectList()
+                .log("collectList")
                 // いいね数の降順ソート実施する
                 .map(this::sortTweetOrderByFavoritesCountDesc)
                 // ソート後のリストの先頭を取得する

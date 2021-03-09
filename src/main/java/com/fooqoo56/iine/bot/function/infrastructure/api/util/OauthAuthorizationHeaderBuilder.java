@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import org.springframework.lang.NonNull;
 import org.springframework.web.util.UriUtils;
 
@@ -19,6 +20,7 @@ import org.springframework.web.util.UriUtils;
  * OAuth2.0の認証ヘッダ作成クラス
  */
 @Builder
+@EqualsAndHashCode
 public class OauthAuthorizationHeaderBuilder implements Serializable {
 
     private static final String AND_DELIMITER = "&";

@@ -41,7 +41,6 @@ public class FunctionSubscriber {
      *
      * @param message Pub/Subからpublishされたメッセージ
      * @return ツイートのいいねに成功した場合、trueを返す
-     * @throws NotSuccessFavoriteException いいねが失敗した時の例外
      */
     @NonNull
     private Boolean favoriteTweetFunction(final PubSubMessage message)

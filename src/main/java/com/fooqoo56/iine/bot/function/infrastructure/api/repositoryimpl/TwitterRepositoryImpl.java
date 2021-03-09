@@ -66,7 +66,8 @@ public class TwitterRepositoryImpl implements TwitterRepository {
         return twitterFavoriteClient
                 .post()
                 .uri(uriBuilder -> uriBuilder.queryParam("id", id).build())
-                .header(HttpHeaders.AUTHORIZATION, getOauth2Header(id))
+                .header(HttpHeaders.AUTHORIZATION,
+                        buildOauthAuthorizationHeaderBuilder(id).getOauthHeader())
                 .retrieve()
                 .bodyToMono(TweetResponse.class);
     }
@@ -109,13 +110,14 @@ public class TwitterRepositoryImpl implements TwitterRepository {
     }
 
     /**
-     * Oauth2.0ヘッダ取得
+     * Oauth2.0ヘッダクラス取得
      *
      * @param id ツイートID
      * @return Oauth2ヘッダ
      */
     @NonNull
-    private String getOauth2Header(final String id) throws NotSuccessGetOauthHmacSignerException {
+    protected OauthAuthorizationHeaderBuilder buildOauthAuthorizationHeaderBuilder(
+            final String id) {
         return OauthAuthorizationHeaderBuilder
                 .builder()
                 .method(HttpMethod.POST.name().toUpperCase())
@@ -125,6 +127,6 @@ public class TwitterRepositoryImpl implements TwitterRepository {
                 .accessToken(twitterFavoriteApiSetting.getAccessToken())
                 .consumerKey(twitterFavoriteApiSetting.getApikey())
                 .queryParameters(Map.of("id", id))
-                .build().getOauthHeader();
+                .build();
     }
 }

@@ -36,7 +36,6 @@ public class TwitterSharedService {
      */
     @NonNull
     public Flux<Tweet> findTweet(final TweetRequest request) {
-
         return twitterRepository.findTweet(request)
                 .map(TweetListResponse::getStatuses)
                 .flatMapMany(Flux::fromIterable)
@@ -51,7 +50,6 @@ public class TwitterSharedService {
      */
     @NonNull
     public Mono<Optional<Tweet>> favoriteTweet(final String id) {
-
         return twitterRepository.favoriteTweet(id)
                 .map(this::buildTweet)
                 .map(Optional::of)
