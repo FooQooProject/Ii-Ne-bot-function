@@ -60,10 +60,7 @@ public class FavoriteService {
                 // ソート後のリストの先頭を取得する
                 .map(this::getTopIdList)
                 // ID指定でツイートを取得する -> いいね未実施ツイートのみフィルタリング -> IDのリストに変換
-                .flatMapMany(twitterSharedService::lookUpTweet)
-                .filter(Tweet::isNotFavorite)
-                .map(Tweet::getId)
-                .collectList()
+                .flatMap(this::filterNonFavoritedTweet)
                 // 条件にあったツイートの件数をログ出力
                 .doOnNext(idList -> log
                         .info("要件と合致したツイートの件数: {}/{}", idList.size(), NUM_OF_TOP_TWEET))
@@ -79,6 +76,21 @@ public class FavoriteService {
                             log.error(exception.toString());
                             return Mono.just(Boolean.FALSE);
                         });
+    }
+
+    /**
+     * ID指定でツイートを取得する -> いいね未実施ツイートのみフィルタリング -> IDのリストに変換
+     *
+     * @param idList ツイートIDのリスト
+     * @return いいね未実施ツイートをフィルタしたIDのリスト
+     */
+    @NonNull
+    private Mono<List<String>> filterNonFavoritedTweet(final List<String> idList) {
+        return Mono.just(idList)
+                .flatMapMany(twitterSharedService::lookUpTweet)
+                .filter(Tweet::isNotFavorite)
+                .map(Tweet::getId)
+                .collectList();
     }
 
     /**

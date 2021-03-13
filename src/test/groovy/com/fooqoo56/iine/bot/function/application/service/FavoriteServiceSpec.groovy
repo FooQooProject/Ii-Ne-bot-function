@@ -24,12 +24,13 @@ class FavoriteServiceSpec extends Specification {
         sut = new FavoriteService(twitterSharedService)
     }
 
-    final "いいねを実行する"() {
+    @Unroll
+    final "いいねを実行する #caseName"() {
         given:
         // mockを作成する
-        twitterSharedService.findTweet(*_) >> getMockTweetFlux()
-        twitterSharedService.lookUpTweet(*_) >> Flux.fromIterable(getMockTweet())
-        twitterSharedService.favoriteTweet(*_) >> Mono.just(Optional.of(Mock(Tweet)))
+        twitterSharedService.findTweet(*_) >> findApiFlux
+        twitterSharedService.lookUpTweet(*_) >> Flux.fromIterable(lookupApiFlux)
+        twitterSharedService.favoriteTweet(*_) >> Mono.just(favoriteApiMono)
 
         // 処理が複雑なprivateメソッドのみmockを作成する
 
@@ -42,11 +43,31 @@ class FavoriteServiceSpec extends Specification {
                 .friendsCount(0)
                 .build()
 
-        // 期待値を作成する
-        final expected = Boolean.TRUE
-
         when:
         final actual = sut.favoriteQualifiedTweet(qualification).block()
+
+        then:
+        actual == expected
+
+        where:
+        caseName            | findApiFlux                    | lookupApiFlux              | favoriteApiMono          || expected
+        "正常系"               | getMockTweetFlux()             | getMockTweet()             | Optional.of(Mock(Tweet)) || Boolean.TRUE
+        "全ていいね済みツイート"       | getMockTweetFlux()             | getMockNonFavoritedTweet() | Optional.of(Mock(Tweet)) || Boolean.FALSE
+        "検索がヒットしない"         | Flux.empty()                   | getMockTweet()             | Optional.of(Mock(Tweet)) || Boolean.FALSE
+        "検索結果で要件に合うツイートがない" | getMockQualifiedTweetFluxNon() | getMockTweet()             | Optional.of(Mock(Tweet)) || Boolean.FALSE
+        "いいねAPIのレスポンスが空"    | getMockTweetFlux()             | getMockTweet()             | Optional.empty()         || Boolean.FALSE
+    }
+
+    final "filterNonFavoritedTweet"() {
+        given:
+        // mockを作成する
+        twitterSharedService.lookUpTweet(*_) >> Flux.fromIterable(getMockTweet())
+
+        // 期待値を作成する
+        final expected = ["aaa", "bbb", "ccc"]
+
+        when:
+        final actual = sut.filterNonFavoritedTweet(["aaa", "bbb", "ccc", "ddd"]).block()
 
         then:
         actual == expected
@@ -56,7 +77,7 @@ class FavoriteServiceSpec extends Specification {
         given:
         final tweetList = getMockTweet()
 
-        final expected = ["aaa", "ccc", "bbb"]
+        final expected = ["aaa", "ccc", "bbb", "ddd"]
 
         when:
         final actual = sut.sortTweetOrderByFavoritesCountDesc(tweetList)
@@ -329,6 +350,38 @@ class FavoriteServiceSpec extends Specification {
     }
 
     /**
+     * ツイートのFluxのモックを取得する
+     *
+     * @return ツイートのFlux
+     */
+    private static final getMockQualifiedTweetFluxNon() {
+        return Flux.just(
+                Tweet.builder()
+                        .id("967824267948773377")
+                        .text("hoge")
+                        .user(User.builder()
+                                .id("11348282")
+                                .followersCount(0)
+                                .friendsCount(0)
+                                .listedCount(0)
+                                .favouritesCount(0)
+                                .statusesCount(0)
+                                .follow(false)
+                                .defaultProfile(false)
+                                .defaultProfileImage(false)
+                                .build())
+                        .retweetCount(988)
+                        .favoriteCount(3875)
+                        .retweet(false)
+                        .sensitive(false)
+                        .quote(false)
+                        .reply(false)
+                        .favorite(false)
+                        .build()
+        )
+    }
+
+    /**
      * モックツイートのリストを取得する
      *
      * @return モックのリスト
@@ -355,6 +408,52 @@ class FavoriteServiceSpec extends Specification {
                     getId() >> "ccc"
                     getUser() >> Mock(User) {
                         getFavouritesCount() >> 9
+                    }
+                },
+                Mock(Tweet) {
+                    isNotFavorite() >> false
+                    getId() >> "ddd"
+                    getUser() >> Mock(User) {
+                        getFavouritesCount() >> 7
+                    }
+                }
+        ]
+    }
+
+    /**
+     * 全ていいね済みのモックツイートのリストを取得する
+     *
+     * @return モックのリスト
+     */
+    private final getMockNonFavoritedTweet() {
+        return [
+                Mock(Tweet) {
+                    isNotFavorite() >> false
+                    getId() >> "aaa"
+                    getUser() >> Mock(User) {
+                        getFavouritesCount() >> 10
+                    }
+
+                },
+                Mock(Tweet) {
+                    isNotFavorite() >> false
+                    getId() >> "bbb"
+                    getUser() >> Mock(User) {
+                        getFavouritesCount() >> 8
+                    }
+                },
+                Mock(Tweet) {
+                    isNotFavorite() >> false
+                    getId() >> "ccc"
+                    getUser() >> Mock(User) {
+                        getFavouritesCount() >> 9
+                    }
+                },
+                Mock(Tweet) {
+                    isNotFavorite() >> false
+                    getId() >> "ddd"
+                    getUser() >> Mock(User) {
+                        getFavouritesCount() >> 7
                     }
                 }
         ]
