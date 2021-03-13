@@ -189,6 +189,11 @@ public class FavoriteService {
                 isGraterThanEqualQualification(tweet.getUser().getFollowersCount(),
                         qualification.getMinFollowersCount());
 
+        // フォロー数要件
+        final boolean isQualifiedFriendsCount =
+                isGraterThanEqualQualification(tweet.getUser().getFriendsCount(),
+                        qualification.getMinFriendsCount());
+
         // ツイート数要件
         final boolean isQualifiedStatusesCount =
                 isGraterThanEqualQualification(tweet.getUser().getStatusesCount(),
@@ -204,6 +209,7 @@ public class FavoriteService {
                 isQualifiedRetweetCount,
                 isQualifiedFavoriteCount,
                 isQualifiedFollowersCount,
+                isQualifiedFriendsCount,
                 isQualifiedStatusesCount});
     }
 
