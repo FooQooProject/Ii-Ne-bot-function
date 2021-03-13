@@ -25,7 +25,7 @@ import org.springframework.lang.Nullable;
 @Builder
 public class UserResponse implements Serializable {
 
-    private static final Long serialVersionUID = -2037788819579328427L;
+    private static final long serialVersionUID = -2037788819579328427L;
 
     /**
      * ユーザID
