@@ -1,9 +1,12 @@
 package com.fooqoo56.iine.bot.function.infrastructure.api.repositoryimpl
 
 import com.fooqoo56.iine.bot.function.infrastructure.api.config.ApiSetting
+import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.Lang
+import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.ResultType
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.*
 import com.fooqoo56.iine.bot.function.infrastructure.api.util.OauthAuthorizationHeaderBuilder
+import com.google.api.client.auth.oauth.OAuthHmacSigner
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.springframework.http.HttpHeaders
@@ -13,7 +16,8 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 
-import java.time.Duration
+import java.security.SecureRandom
+import java.time.*
 
 /**
  * TwitterRepositoryのテスト
@@ -23,6 +27,9 @@ class TwitterRepositoryImplSpec extends Specification {
     private MockWebServer mockWebServer
     private WebClient webClient
     private ApiSetting apiSetting
+    private Clock clock
+    private SecureRandom secureRandom
+    private OAuthHmacSigner signer
 
     final setup() {
         mockWebServer = new MockWebServer()
@@ -38,6 +45,21 @@ class TwitterRepositoryImplSpec extends Specification {
         apiSetting.setAccessToken("accessToken")
         apiSetting.setAccessTokenSecret("accessTokenSecret")
         apiSetting.setMaxInMemorySize(16777216)
+
+        clock = Clock.fixed(ZonedDateTime.of(
+                2021,
+                01,
+                01,
+                12,
+                12,
+                12,
+                0, ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
+
+        secureRandom = Mock(SecureRandom) {
+            nextBytes() >> "12345"
+        }
+
+        signer = new OAuthHmacSigner()
     }
 
     final cleanup() {
@@ -47,7 +69,7 @@ class TwitterRepositoryImplSpec extends Specification {
     final "getBearerToken"() {
         given:
         // テスト対象クラスのインスタンス作成
-        final sut = new TwitterRepositoryImpl(apiSetting, webClient, webClient, webClient, webClient)
+        final sut = new TwitterRepositoryImpl(apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer)
 
         // mockサーバを作成する
         final mockResponse = new FileReader("src/test/resources/oauth2.json").text
@@ -73,7 +95,7 @@ class TwitterRepositoryImplSpec extends Specification {
     final "buildOauthAuthorizationHeaderBuilder"() {
         given:
         // テスト対象クラスのインスタンス作成
-        final sut = new TwitterRepositoryImpl(apiSetting, webClient, webClient, webClient, webClient)
+        final sut = new TwitterRepositoryImpl(apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer)
 
         // 期待値を作成する
         final expectedResults = OauthAuthorizationHeaderBuilder.builder()
@@ -84,6 +106,9 @@ class TwitterRepositoryImplSpec extends Specification {
                 .queryParameters(Map.of("id", "id"))
                 .consumerKey("apiKey")
                 .accessToken("accessToken")
+                .instant(Instant.now(clock))
+                .secureRandom(secureRandom)
+                .signer(signer)
                 .build()
 
         when:
@@ -96,7 +121,7 @@ class TwitterRepositoryImplSpec extends Specification {
     final "findTweet"() {
         given:
         // テスト対象クラスのインスタンス作成 - メソッドのモック化
-        final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, webClient, webClient, webClient, webClient]) {
+        final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer]) {
             getBearerToken() >> Mono.just(Oauth2Response.builder()
                     .tokenType("token_type")
                     .accessToken("access_token")
@@ -118,6 +143,11 @@ class TwitterRepositoryImplSpec extends Specification {
         final request = TweetRequest.builder()
                 .query("query")
                 .maxId("0")
+                .lang(Lang.JA)
+                .resultType(ResultType.RECENT)
+                .includeEntitiesFlag(Boolean.FALSE)
+                .count(100)
+                .until(LocalDate.of(2021, 1, 1))
                 .build()
 
         when:
@@ -130,7 +160,7 @@ class TwitterRepositoryImplSpec extends Specification {
     final "favoriteTweet"() {
         given:
         // テスト対象クラスのインスタンス作成 - メソッドのモック化
-        final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, webClient, webClient, webClient, webClient]) {
+        final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer]) {
             buildOauthAuthorizationHeaderBuilder() >> Mock(OauthAuthorizationHeaderBuilder) {
                 getOauthHeader() >> "oauth2header"
             }
@@ -160,7 +190,7 @@ class TwitterRepositoryImplSpec extends Specification {
     final "lookupTweet"() {
         given:
         // テスト対象クラスのインスタンス作成 - メソッドのモック化
-        final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, webClient, webClient, webClient, webClient]) {
+        final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer]) {
             getBearerToken() >> Mono.just(Oauth2Response.builder()
                     .tokenType("token_type")
                     .accessToken("access_token")

@@ -8,6 +8,10 @@ import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.Oauth2Resp
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.TweetListResponse;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.TweetResponse;
 import com.fooqoo56.iine.bot.function.infrastructure.api.util.OauthAuthorizationHeaderBuilder;
+import com.google.api.client.auth.oauth.OAuthHmacSigner;
+import java.security.SecureRandom;
+import java.time.Clock;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +33,7 @@ import reactor.core.publisher.Mono;
 public class TwitterRepositoryImpl implements TwitterRepository {
 
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final String ID_PARAM = "id";
 
     private final ApiSetting twitterFavoriteApiSetting;
 
@@ -36,6 +41,9 @@ public class TwitterRepositoryImpl implements TwitterRepository {
     private final WebClient twitterFavoriteClient;
     private final WebClient twitterLookupClient;
     private final WebClient bearerTokenTwitterClient;
+    private final Clock clock;
+    private final SecureRandom secureRandom;
+    private final OAuthHmacSigner signer;
 
     /**
      * {@inheritDoc}
@@ -65,7 +73,7 @@ public class TwitterRepositoryImpl implements TwitterRepository {
             throws NotSuccessGetOauthHmacSignerException {
         return twitterFavoriteClient
                 .post()
-                .uri(uriBuilder -> uriBuilder.queryParam("id", id).build())
+                .uri(uriBuilder -> uriBuilder.queryParam(ID_PARAM, id).build())
                 .header(HttpHeaders.AUTHORIZATION,
                         buildOauthAuthorizationHeaderBuilder(id).getOauthHeader())
                 .retrieve()
@@ -84,7 +92,7 @@ public class TwitterRepositoryImpl implements TwitterRepository {
                         accessToken -> twitterLookupClient
                                 .get()
                                 .uri(uriBuilder -> uriBuilder
-                                        .queryParam("id", String.join(",", ids))
+                                        .queryParam(ID_PARAM, String.join(",", ids))
                                         .build())
                                 .header(HttpHeaders.AUTHORIZATION,
                                         BEARER_PREFIX + accessToken)
@@ -126,7 +134,10 @@ public class TwitterRepositoryImpl implements TwitterRepository {
                 .tokenSecret(twitterFavoriteApiSetting.getAccessTokenSecret())
                 .accessToken(twitterFavoriteApiSetting.getAccessToken())
                 .consumerKey(twitterFavoriteApiSetting.getApikey())
-                .queryParameters(Map.of("id", id))
+                .queryParameters(Map.of(ID_PARAM, id))
+                .instant(Instant.now(clock))
+                .secureRandom(secureRandom)
+                .signer(signer)
                 .build();
     }
 }

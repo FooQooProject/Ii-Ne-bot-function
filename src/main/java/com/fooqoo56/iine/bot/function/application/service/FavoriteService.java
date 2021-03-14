@@ -1,11 +1,19 @@
 package com.fooqoo56.iine.bot.function.application.service;
 
+import static com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest.DEFAULT_MAX_ID;
+import static com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest.MAX_COUNT;
+
+
 import com.fooqoo56.iine.bot.function.application.sharedservice.TwitterSharedService;
 import com.fooqoo56.iine.bot.function.domain.model.Qualification;
 import com.fooqoo56.iine.bot.function.domain.model.Tweet;
 import com.fooqoo56.iine.bot.function.exception.NotFoundQualifiedTweetException;
+import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.Lang;
+import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.ResultType;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest;
 import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualification;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +44,7 @@ public class FavoriteService {
     private static final int NUM_OF_TOP_TWEET = 30;
 
     private final TwitterSharedService twitterSharedService;
+    private final Clock clock;
 
     /**
      * 要件の合致したツイートのいいね
@@ -48,7 +57,7 @@ public class FavoriteService {
 
         final Qualification qualification = buildQualification(tweetQualification);
 
-        final TweetRequest request = TweetRequest.buildTweetRequest(qualification);
+        final TweetRequest request = buildTweetRequest(qualification);
 
         return twitterSharedService.findTweet(request)
                 // いいね要件に合致したツイートのみフィルタリングする
@@ -76,6 +85,26 @@ public class FavoriteService {
                             log.error(exception.toString());
                             return Mono.just(Boolean.FALSE);
                         });
+    }
+
+    /**
+     * ツイッター検索APIのリクエストを生成
+     *
+     * @param qualification ツイート要件
+     * @return ツイッター検索APIのリクエスト
+     */
+    @NonNull
+    private TweetRequest buildTweetRequest(final Qualification qualification) {
+        return TweetRequest
+                .builder()
+                .query(qualification.getQuery())
+                .lang(Lang.JA)
+                .resultType(ResultType.RECENT)
+                .count(MAX_COUNT)
+                .includeEntitiesFlag(Boolean.FALSE)
+                .maxId(DEFAULT_MAX_ID)
+                .until(LocalDate.now(clock))
+                .build();
     }
 
     /**

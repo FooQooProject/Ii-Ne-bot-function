@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.lang.NonNull;
 import org.springframework.web.util.UriUtils;
@@ -23,9 +25,13 @@ import org.springframework.web.util.UriUtils;
  */
 @Builder
 @EqualsAndHashCode
+@RequiredArgsConstructor
+@Getter
 public class OauthAuthorizationHeaderBuilder implements Serializable {
 
     private static final String AND_DELIMITER = "&";
+
+    private static final String OAUTH_VERSION = "1.0";
 
     private static final long serialVersionUID = -8790302082606292722L;
 
@@ -72,18 +78,48 @@ public class OauthAuthorizationHeaderBuilder implements Serializable {
     private final String accessToken;
 
     /**
-     * OauthHeaderの取得.
+     * Instant
+     */
+    @NonNull
+    private final Instant instant;
+
+    /**
+     * SecureRandom
+     */
+    @NonNull
+    private final SecureRandom secureRandom;
+
+    /**
+     * OAuthHmacSigner
+     */
+    @NonNull
+    private final OAuthHmacSigner signer;
+
+    /**
+     * Replaces any character not specifically unreserved to an equivalent percent sequence.
+     *
+     * @param text the string to encode
+     * @return and encoded string
+     */
+    @NonNull
+    private static String encodeUriComponent(final String text) {
+        return UriUtils.encode(text, UTF_8);
+    }
+
+    /**
+     * OauthHeaderの取得
      *
      * @return OauthHeader
+     * @throws NotSuccessGetOauthHmacSignerException GeneralSecurityExceptionが発生した場合の独自例外
      */
     @NonNull
     public String getOauthHeader() throws NotSuccessGetOauthHmacSignerException {
         final Map<String, String> parameters = new LinkedHashMap<>(queryParameters);
 
         // Boiler plate parameters
-        parameters.put("oauth_timestamp", String.valueOf(Instant.now().getEpochSecond()));
-        parameters.put("oauth_signature_method", "HMAC-SHA1");
-        parameters.put("oauth_version", "1.0");
+        parameters.put("oauth_timestamp", String.valueOf(instant.getEpochSecond()));
+        parameters.put("oauth_signature_method", signer.getSignatureMethod());
+        parameters.put("oauth_version", OAUTH_VERSION);
         parameters.put("oauth_nonce", generateSecretToken());
         parameters.put("oauth_consumer_key", consumerKey);
         parameters.put("oauth_token", accessToken);
@@ -115,27 +151,12 @@ public class OauthAuthorizationHeaderBuilder implements Serializable {
     }
 
     /**
-     * Replaces any character not specifically unreserved to an equivalent percent sequence.
-     *
-     * @param s the string to encode
-     * @return and encoded string
+     * OauthHmacSignerの設定
      */
     @NonNull
-    private String encodeUriComponent(final String s) {
-        return UriUtils.encode(s, UTF_8);
-    }
-
-    /**
-     * OauthHmacSignerの取得.
-     *
-     * @return OauthHmacSigner
-     */
-    @NonNull
-    private OAuthHmacSigner getOauthHmacSigner() {
-        final OAuthHmacSigner signer = new OAuthHmacSigner();
+    private void setOauthHmacSigner() {
         signer.clientSharedSecret = consumerSecret;
         signer.tokenSharedSecret = tokenSecret;
-        return signer;
     }
 
     /**
@@ -148,11 +169,11 @@ public class OauthAuthorizationHeaderBuilder implements Serializable {
     @NonNull
     private String generateSignature(final String message)
             throws NotSuccessGetOauthHmacSignerException {
-        final OAuthHmacSigner signer = getOauthHmacSigner();
+        setOauthHmacSigner();
 
         try {
             return signer.computeSignature(message);
-        } catch (final GeneralSecurityException e) {
+        } catch (final GeneralSecurityException generalSecurityException) {
             throw new NotSuccessGetOauthHmacSignerException("OAuth2.0の認証鍵作成に失敗しました");
         }
     }
@@ -164,9 +185,8 @@ public class OauthAuthorizationHeaderBuilder implements Serializable {
      */
     @NonNull
     private String generateSecretToken() {
-        final SecureRandom secRandom = new SecureRandom();
         final byte[] result = new byte[32];
-        secRandom.nextBytes(result);
+        secureRandom.nextBytes(result);
         return Hex.encodeHexString(result);
     }
 }

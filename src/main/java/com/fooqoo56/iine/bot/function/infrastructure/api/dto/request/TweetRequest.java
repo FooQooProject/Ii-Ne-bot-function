@@ -1,6 +1,5 @@
 package com.fooqoo56.iine.bot.function.infrastructure.api.dto.request;
 
-import com.fooqoo56.iine.bot.function.domain.model.Qualification;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.Lang;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.ResultType;
 import java.io.Serializable;
@@ -23,10 +22,9 @@ import org.springframework.util.MultiValueMap;
 @Builder
 public class TweetRequest implements Serializable {
 
+    public static final String DEFAULT_MAX_ID = "-1";
+    public static final int MAX_COUNT = 100;
     private static final long serialVersionUID = -9099926804237935939L;
-
-    private static final String DEFAULT_MAX_ID = "-1";
-
     /**
      * 検索クエリ
      */
@@ -37,80 +35,37 @@ public class TweetRequest implements Serializable {
      * 言語
      */
     @NonNull
-    private final Lang lang = Lang.JA;
+    private final Lang lang;
 
     /**
      * 検索結果の設定
      */
     @NonNull
-    private final ResultType resultType = ResultType.RECENT;
+    private final ResultType resultType;
 
     /**
      * 最大数
      */
     @NonNull
-    private final Integer count = 100;
+    private final Integer count;
 
     /**
      * entityを含める場合、true
      */
     @NonNull
-    private final Boolean includeEntitiesFlag = false;
+    private final Boolean includeEntitiesFlag;
 
     /**
      * 現在時刻
      */
     @NonNull
-    private final LocalDate until = LocalDate.now();
+    private final LocalDate until;
 
     /**
      * max_idの指定
      */
     @NonNull
     private final String maxId;
-
-    /**
-     * payloadをAPIクエリへ変換.
-     *
-     * @param qualification PayLoad
-     * @return APIクエリ
-     */
-    @NonNull
-    public static TweetRequest buildTweetRequest(final Qualification qualification) {
-        return TweetRequest
-                .builder()
-                .query(addFilterRetweet(qualification.getQuery()))
-                .maxId(DEFAULT_MAX_ID)
-                .build();
-    }
-
-    /**
-     * payloadをAPIクエリへ変換.
-     *
-     * @param qualification PayLoad
-     * @param nextMaxId     nextMaxId
-     * @return APIクエリ
-     */
-    @NonNull
-    public static TweetRequest buildTweetRequest(final Qualification qualification,
-                                                 final String nextMaxId) {
-        return TweetRequest
-                .builder()
-                .query(addFilterRetweet(qualification.getQuery()))
-                .maxId(nextMaxId)
-                .build();
-    }
-
-    /**
-     * クエリにリツイートを除くフィルタを追加する.
-     *
-     * @param query クエリ
-     * @return フィルタ付きクエリ
-     */
-    @NonNull
-    private static String addFilterRetweet(final String query) {
-        return query + " -filter:retweets";
-    }
 
     /**
      * クエリをMap型に変換.
@@ -121,14 +76,32 @@ public class TweetRequest implements Serializable {
     public MultiValueMap<String, String> getQueryMap() {
         final MultiValueMap<String, String> queries = new LinkedMultiValueMap<>();
 
-        queries.add("q", query);
+        queries.add("q", getQueryWithFilter());
         queries.add("lang", lang.getCountry());
         queries.add("result_type", resultType.getName());
         queries.add("count", count.toString());
         queries.add("include_entities", includeEntitiesFlag.toString());
-        queries.add("until", until.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        queries.add("until", getFormattedUntil());
         queries.add("max_id", maxId);
 
         return queries;
+    }
+
+    /**
+     * 「yyyy-MM-dd」でフォーマットしたuntilの値
+     *
+     * @return フォーマットされたuntil
+     */
+    private String getFormattedUntil() {
+        return until.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
+    /**
+     * フィルタ付きのクエリを取得する
+     *
+     * @return フィルタ付きのクエリを取得する
+     */
+    private String getQueryWithFilter() {
+        return query + " -filter:retweets";
     }
 }

@@ -5,11 +5,19 @@ import com.fooqoo56.iine.bot.function.domain.model.Qualification
 import com.fooqoo56.iine.bot.function.domain.model.Tweet
 import com.fooqoo56.iine.bot.function.domain.model.User
 import com.fooqoo56.iine.bot.function.exception.NotFoundQualifiedTweetException
+import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.Lang
+import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.ResultType
+import com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest
 import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualification
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import java.time.Clock
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 /**
  * FavoriteServiceのテスト
@@ -20,8 +28,17 @@ class FavoriteServiceSpec extends Specification {
     private TwitterSharedService twitterSharedService
 
     final setup() {
+        final clock = Clock.fixed(ZonedDateTime.of(
+                2021,
+                01,
+                01,
+                12,
+                12,
+                12,
+                0, ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
+
         twitterSharedService = Mock(TwitterSharedService)
-        sut = new FavoriteService(twitterSharedService)
+        sut = new FavoriteService(twitterSharedService, clock)
     }
 
     @Unroll
@@ -56,6 +73,31 @@ class FavoriteServiceSpec extends Specification {
         "検索がヒットしない"         | Flux.empty()                   | getMockTweet()             | Optional.of(Mock(Tweet)) || Boolean.FALSE
         "検索結果で要件に合うツイートがない" | getMockQualifiedTweetFluxNon() | getMockTweet()             | Optional.of(Mock(Tweet)) || Boolean.FALSE
         "いいねAPIのレスポンスが空"    | getMockTweetFlux()             | getMockTweet()             | Optional.empty()         || Boolean.FALSE
+    }
+
+    final "buildTweetRequest"() {
+        given:
+        // 引数を作成する
+        final request = Mock(Qualification) {
+            getQuery() >> "spring boot"
+        }
+
+        // 期待値を作成する
+        final expected = TweetRequest.builder()
+                .query("spring boot")
+                .maxId("-1")
+                .lang(Lang.JA)
+                .resultType(ResultType.RECENT)
+                .count(100)
+                .includeEntitiesFlag(Boolean.FALSE)
+                .until(LocalDate.of(2021, 1, 1))
+                .build()
+
+        when:
+        final actual = sut.buildTweetRequest(request)
+
+        then:
+        actual == expected
     }
 
     final "filterNonFavoritedTweet"() {
