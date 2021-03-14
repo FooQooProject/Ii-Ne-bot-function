@@ -1,22 +1,71 @@
 package com.fooqoo56.iine.bot.function.domain.model;
 
-public class User {
+import java.io.Serializable;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 
-    private String id;
+/**
+ * ユーザ
+ */
+@Getter
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@Builder
+public class User implements Serializable {
 
-    private Long followersCount;
+    private static final long serialVersionUID = 6732265885878037807L;
 
-    private Long friendsCount;
+    /**
+     * ユーザID
+     */
+    @NonNull
+    private final String id;
 
-    private Long listedCount;
+    /**
+     * フォロワー数
+     */
+    @NonNull
+    private final Integer followersCount;
 
-    private Long favouritesCount;
+    /**
+     * フォロー数
+     */
+    @NonNull
+    private final Integer friendsCount;
 
-    private Long statusesCount;
+    /**
+     * リストに登録された数
+     */
+    @NonNull
+    private final Integer listedCount;
 
-    private Boolean following;
+    /**
+     * いいねしている数
+     */
+    @NonNull
+    private final Integer favouritesCount;
 
-    private Boolean defaultProfileFlag;
+    /**
+     * ツイートしてる数
+     */
+    @NonNull
+    private final Integer statusesCount;
 
-    private Boolean defaultProfileImageFlag;
+    /**
+     * フォロー済の場合、true
+     */
+    private final boolean follow;
+
+    /**
+     * デフォルトのプロフィールのままの場合、true
+     */
+    private final boolean defaultProfile;
+
+    /**
+     * デフォルトのプロフィール画像のままの場合、true
+     */
+    private final boolean defaultProfileImage;
 }

@@ -3,18 +3,14 @@ package com.fooqoo56.iine.bot.function.presentation.function.dto;
 import java.io.Serializable;
 import java.util.Map;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.springframework.lang.NonNull;
 
 /**
  * Google Cloud PubsubからPublishされるメッセージ
  */
 @Getter
-@ToString
-@EqualsAndHashCode
 @RequiredArgsConstructor
 @Builder
 public class PubSubMessage implements Serializable {
@@ -44,4 +40,14 @@ public class PubSubMessage implements Serializable {
      */
     @NonNull
     private final String publishTime;
+
+    /**
+     * 入力内容をログ化する
+     *
+     * @return ログの文字列
+     */
+    public String getLog() {
+        return String.format("メッセージID: %s, attributes: %s, publishTime: %s, data: %s", messageId,
+                attributes.toString(), publishTime, data);
+    }
 }

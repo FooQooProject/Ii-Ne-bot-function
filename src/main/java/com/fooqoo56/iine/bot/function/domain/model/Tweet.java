@@ -1,22 +1,84 @@
 package com.fooqoo56.iine.bot.function.domain.model;
 
-public class Tweet {
+import java.io.Serializable;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 
-    private String id;
+/**
+ * ツイート
+ */
+@Getter
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@Builder
+public class Tweet implements Serializable {
 
-    private String text;
+    private static final long serialVersionUID = -5203574052011105305L;
 
-    private Long retweetCount;
+    /**
+     * ツイートID
+     */
+    @NonNull
+    private final String id;
 
-    private Long favoriteCount;
+    /**
+     * ツイート本文
+     */
+    @NonNull
+    private final String text;
 
-    private Boolean favoriteFlag;
+    /**
+     * リツイート数
+     */
+    @NonNull
+    private final Integer retweetCount;
 
-    private Boolean retweetFlag;
+    /**
+     * いいね数
+     */
+    @NonNull
+    private final Integer favoriteCount;
 
-    private Boolean sensitiveFlag;
+    /**
+     * ユーザ
+     */
+    @NonNull
+    private final User user;
 
-    private Boolean quoteFlag;
+    /**
+     * いいね済の場合、true
+     */
+    private final boolean favorite;
 
-    private String inReplyToStatusId;
+    /**
+     * リツイート済の場合、true
+     */
+    private final boolean retweet;
+
+    /**
+     * センシティブ指定の場合、true
+     */
+    private final boolean sensitive;
+
+    /**
+     * 引用ツイートの場合、true
+     */
+    private final boolean quote;
+
+    /**
+     * リプライツイートの場合、true
+     */
+    private final boolean reply;
+
+    /**
+     * いいねが未実施かどうか
+     *
+     * @return いいねが未実施の場合、trueを返す
+     */
+    public boolean isNotFavorite() {
+        return !favorite;
+    }
 }

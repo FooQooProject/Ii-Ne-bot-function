@@ -2,13 +2,15 @@ package com.fooqoo56.iine.bot.function.presentation.function
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fooqoo56.iine.bot.function.application.service.FavoriteService
-import com.fooqoo56.iine.bot.function.exception.NotSuccessFavoriteException
 import com.fooqoo56.iine.bot.function.exception.NotSuccessMappingException
 import com.fooqoo56.iine.bot.function.presentation.function.dto.PubSubMessage
-import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetCondition
+import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualification
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 
+/**
+ * PubSubSubscriberのテスト
+ */
 class PubSubSubscriberSpec extends Specification {
 
     private FunctionSubscriber sut
@@ -23,11 +25,14 @@ class PubSubSubscriberSpec extends Specification {
     final "favoriteTweetFunction"() {
         given:
         // 引数を生成する
-        final message = Mock(PubSubMessage) {
-            getData() >> "eyJxdWVyeSI6ICJOZXh0LmpzIiwgInJldHdlZXRDb3VudCI6IDAsICJmYXZvcml0ZUNvdW50IjogMywgImZvbGxvd2Vyc0NvdW50IjogMTAsICJmcmllbmRzQ291bnQiOiAxMH0K"
-        }
+        final message = PubSubMessage.builder()
+                .data("eyJxdWVyeSI6ICJOZXh0LmpzIiwgInJldHdlZXRDb3VudCI6IDAsICJmYXZvcml0ZUNvdW50IjogMywgImZvbGxvd2Vyc0NvdW50IjogMTAsICJmcmllbmRzQ291bnQiOiAxMH0K")
+                .attributes(Map.of("key", "value"))
+                .messageId("id")
+                .publishTime("publishTime")
+                .build()
 
-        favoriteService.favoriteTweet(*_) >> Mono.just(Boolean.TRUE)
+        favoriteService.favoriteQualifiedTweet(*_) >> Mono.just(Boolean.TRUE)
 
         when:
         final actual = sut.favoriteTweetFunction(message)
@@ -36,25 +41,25 @@ class PubSubSubscriberSpec extends Specification {
         actual == Boolean.TRUE
     }
 
-    final "favoriteTweetFunction - 例外 - #caseName"() {
+    final "favoriteTweetFunction - #caseName"() {
         given:
         // 引数を生成する
         final message = Mock(PubSubMessage) {
             getData() >> "eyJxdWVyeSI6ICJOZXh0LmpzIiwgInJldHdlZXRDb3VudCI6IDAsICJmYXZvcml0ZUNvdW50IjogMywgImZvbGxvd2Vyc0NvdW50IjogMTAsICJmcmllbmRzQ291bnQiOiAxMH0K"
         }
 
-        favoriteService.favoriteTweet(*_) >> favoriteTweetResponse
+        favoriteService.favoriteQualifiedTweet(*_) >> favoriteTweetResponse
 
         when:
-        sut.favoriteTweetFunction(message)
+        final actual = sut.favoriteTweetFunction(message)
 
         then:
-        thrown(NotSuccessFavoriteException)
+        actual == expected
 
         where:
-        caseName      | favoriteTweetResponse
-        "レスポンスがfalse" | Mono.just(Boolean.FALSE)
-        "レスポンスがnull"  | Mono.empty()
+        caseName      | favoriteTweetResponse    || expected
+        "レスポンスがfalse" | Mono.just(Boolean.FALSE) || Boolean.FALSE
+        "レスポンスがnull"  | Mono.empty()             || Boolean.FALSE
     }
 
     final "mapTweetCondition"() {
@@ -63,7 +68,7 @@ class PubSubSubscriberSpec extends Specification {
         final data = "{\"query\": \"Next.js\", \"retweetCount\": 0, \"favoriteCount\": 3, \"followersCount\": 10, \"friendsCount\": 10}"
 
         // 期待値を生成
-        final expected = TweetCondition.builder()
+        final expected = TweetQualification.builder()
                 .query("Next.js")
                 .retweetCount(0)
                 .favoriteCount(3)
@@ -91,7 +96,6 @@ class PubSubSubscriberSpec extends Specification {
 
     final "getDecodedMessage"() {
         given:
-
         // 引数を生成する
         final message = Mock(PubSubMessage) {
             getData() >> "eyJxdWVyeSI6ICJOZXh0LmpzIiwgInJldHdlZXRDb3VudCI6IDAsICJmYXZvcml0ZUNvdW50IjogMywgImZvbGxvd2Vyc0NvdW50IjogMTAsICJmcmllbmRzQ291bnQiOiAxMH0K"
