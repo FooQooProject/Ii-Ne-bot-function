@@ -129,3 +129,6 @@ jacocoTestReport {
         html.enabled = true
     }
 }
+
+// gradle buildを実行した際に、Jacocoでのカバレッジ測定も実行する
+build.dependsOn jacocoTestReport
