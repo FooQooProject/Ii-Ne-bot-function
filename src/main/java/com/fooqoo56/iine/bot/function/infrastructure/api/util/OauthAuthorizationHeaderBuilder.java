@@ -5,7 +5,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.fooqoo56.iine.bot.function.exception.NotSuccessGetOauthHmacSignerException;
 import com.google.api.client.auth.oauth.OAuthHmacSigner;
-import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.time.Instant;
@@ -27,13 +26,11 @@ import org.springframework.web.util.UriUtils;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 @Getter
-public class OauthAuthorizationHeaderBuilder implements Serializable {
+public class OauthAuthorizationHeaderBuilder {
 
     private static final String AND_DELIMITER = "&";
 
     private static final String OAUTH_VERSION = "1.0";
-
-    private static final long serialVersionUID = -8790302082606292722L;
 
     /**
      * Access Token Secret
