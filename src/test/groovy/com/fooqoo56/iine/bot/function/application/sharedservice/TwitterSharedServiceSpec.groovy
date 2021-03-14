@@ -8,6 +8,7 @@ import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.SearchMeta
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.TweetListResponse
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.TweetResponse
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.UserResponse
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import spock.lang.Specification
@@ -97,6 +98,18 @@ class TwitterSharedServiceSpec extends Specification {
 
         then:
         actual == expected
+    }
+
+    final "favoriteTweet - 例外"() {
+        given:
+        // mock作成
+        twitterRepository.favoriteTweet(*_) >> Mono.error(new WebClientResponseException(500, "", null, null, null))
+
+        when:
+        final actual = sut.favoriteTweet("id").block()
+
+        then:
+        actual == Optional.empty()
     }
 
     final "lookUpTweet"() {

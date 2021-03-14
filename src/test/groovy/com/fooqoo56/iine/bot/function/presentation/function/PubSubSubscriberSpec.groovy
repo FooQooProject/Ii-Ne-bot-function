@@ -25,9 +25,12 @@ class PubSubSubscriberSpec extends Specification {
     final "favoriteTweetFunction"() {
         given:
         // 引数を生成する
-        final message = Mock(PubSubMessage) {
-            getData() >> "eyJxdWVyeSI6ICJOZXh0LmpzIiwgInJldHdlZXRDb3VudCI6IDAsICJmYXZvcml0ZUNvdW50IjogMywgImZvbGxvd2Vyc0NvdW50IjogMTAsICJmcmllbmRzQ291bnQiOiAxMH0K"
-        }
+        final message = PubSubMessage.builder()
+                .data("eyJxdWVyeSI6ICJOZXh0LmpzIiwgInJldHdlZXRDb3VudCI6IDAsICJmYXZvcml0ZUNvdW50IjogMywgImZvbGxvd2Vyc0NvdW50IjogMTAsICJmcmllbmRzQ291bnQiOiAxMH0K")
+                .attributes(Map.of("key", "value"))
+                .messageId("id")
+                .publishTime("publishTime")
+                .build()
 
         favoriteService.favoriteQualifiedTweet(*_) >> Mono.just(Boolean.TRUE)
 

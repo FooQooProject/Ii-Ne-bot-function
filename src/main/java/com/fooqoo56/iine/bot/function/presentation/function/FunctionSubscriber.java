@@ -2,7 +2,6 @@ package com.fooqoo56.iine.bot.function.presentation.function;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fooqoo56.iine.bot.function.application.service.FavoriteService;
-import com.fooqoo56.iine.bot.function.exception.NotSuccessFavoriteException;
 import com.fooqoo56.iine.bot.function.exception.NotSuccessMappingException;
 import com.fooqoo56.iine.bot.function.presentation.function.dto.PubSubMessage;
 import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualification;
@@ -43,8 +42,9 @@ public class FunctionSubscriber {
      * @return ツイートのいいねに成功した場合、trueを返す
      */
     @NonNull
-    private Boolean favoriteTweetFunction(final PubSubMessage message)
-            throws NotSuccessFavoriteException {
+    private Boolean favoriteTweetFunction(final PubSubMessage message) {
+        // pub/subのメッセージをログ出力する
+        log.info(message.getLog());
 
         final TweetQualification tweetQualification = mapTweetCondition(getDecodedMessage(message));
         // ツイートのいいね実行 & 同期処理

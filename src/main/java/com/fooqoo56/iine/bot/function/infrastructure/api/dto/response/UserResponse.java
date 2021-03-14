@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -17,7 +16,6 @@ import org.springframework.lang.Nullable;
  * ツイッター検索APIのレスポンスに含まれるユーザデータ
  */
 @Getter
-@ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @NoArgsConstructor
