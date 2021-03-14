@@ -24,7 +24,7 @@ class OauthAuthorizationHeaderBuilderSpec extends Specification {
                 12,
                 12,
                 12,
-                0, ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
+                0, ZoneId.of("UTC")).toInstant(), ZoneId.of("UTC"))
 
         secureRandom = Mock(SecureRandom) {
             nextBytes(*_) >> null
