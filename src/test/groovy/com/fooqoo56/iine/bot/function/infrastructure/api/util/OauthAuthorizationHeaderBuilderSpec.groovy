@@ -49,7 +49,7 @@ class OauthAuthorizationHeaderBuilderSpec extends Specification {
                 .signer(signer)
                 .build()
 
-        final expected = "OAuth id=\"12345\", oauth_timestamp=\"1609470732\", oauth_signature_method=\"HMAC-SHA1\", oauth_version=\"1.0\", oauth_nonce=\"0000000000000000000000000000000000000000000000000000000000000000\", oauth_consumer_key=\"consumerKey\", oauth_token=\"accessToken\", oauth_signature=\"aoXWDkwHePXNA%2BtA4SDH4%2BWfIs4%3D\""
+        final expected = "OAuth id=\"12345\", oauth_timestamp=\"1609503132\", oauth_signature_method=\"HMAC-SHA1\", oauth_version=\"1.0\", oauth_nonce=\"0000000000000000000000000000000000000000000000000000000000000000\", oauth_consumer_key=\"consumerKey\", oauth_token=\"accessToken\", oauth_signature=\"O5GZjW71fO9Ms2xMya6XPB7xAi0%3D\""
 
         // OAuthHmacSignerがモック化できないため、例外の検証はskipする
         when:
