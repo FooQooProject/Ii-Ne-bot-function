@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: default
+    include: prod
+  batch:
+    initialize-schema: never
+    job:
+      enabled: false

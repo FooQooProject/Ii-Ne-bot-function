@@ -1,0 +1,134 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        // Spring Boot Gradle Plugin を使用
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.4.2'
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.4.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'groovy'
+    id 'com.github.spotbugs' version '4.6.0'
+    id 'jacoco'
+}
+
+group = 'com.fooqoo56.iine.bot.function'
+version = '1.0.0'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    invoker
+}
+
+dependencies {
+    implementation(
+            // webflux
+            'org.springframework.boot:spring-boot-starter-webflux',
+            // oauth1.0a
+            'com.google.oauth-client:google-oauth-client:1.31.4',
+            // guava
+            'com.google.guava:guava:30.1-jre',
+            // google cloud function for spring boot
+            'org.springframework.cloud:spring-cloud-function-adapter-gcp:3.1.1',
+            // google cloud function for test
+            'com.google.cloud.functions:functions-framework-api:1.0.1',
+            // commons-lang3
+            'org.apache.commons:commons-lang3:3.11',
+            "com.squareup.okhttp3:okhttp:4.9.0"
+    )
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // google cloud function for test
+    invoker 'com.google.cloud.functions.invoker:java-function-invoker:1.0.0-alpha-2-rc5'
+
+    testImplementation(
+            // spring boot test framework
+            'org.springframework.boot:spring-boot-starter-test',
+            // test library for webflux
+            'io.projectreactor:reactor-test',
+            // spock
+            'org.spockframework:spock-core:1.3-groovy-2.5',
+            // spock for spring boot
+            'org.spockframework:spock-spring:1.3-groovy-2.5',
+            // library for spock
+            'cglib:cglib-nodep:3.3.0',
+            // mock for webflux
+            'com.squareup.okhttp3:mockwebserver:4.9.0'
+    )
+
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.1'
+}
+
+// bootRun タスクの設定を追加する
+bootRun {
+    // プロファイルを指定する
+    jvmArgs = ['-Dspring.profiles.active=prod']
+}
+
+test {
+    testLogging {
+        // テスト時の標準出力と標準エラー出力を表示する
+        showStandardStreams true
+        // イベントを出力する (TestLogEvent)
+        events 'started', 'skipped', 'passed', 'failed'
+    }
+}
+
+// functionのローカル実行
+tasks.register("function", JavaExec) {
+    main = 'com.google.cloud.functions.invoker.runner.Invoker'
+    classpath(configurations.invoker)
+    inputs.files(configurations.runtimeClasspath, sourceSets.main.output)
+    args(
+            '--target', 'org.springframework.cloud.function.adapter.gcp.GcfJarLauncher',
+            '--port', project.findProperty('function.port') ?: 8080
+    )
+    doFirst {
+        args(
+                '--classpath', files(configurations.runtimeClasspath, sourceSets.main.output).asPath
+        )
+    }
+}
+
+spotbugsMain {
+    reports {
+        html {
+            enabled = true
+            destination = file("$buildDir/reports/spotbugs/spotbugs.html")
+            stylesheet = 'fancy-hist.xsl'
+        }
+    }
+    excludeFilter = file('./config/spotbugs_filter.xml')
+}
+
+spotbugsTest {
+    reports {
+        html {
+            enabled = true
+            destination = file("$buildDir/reports/spotbugs/spotbugsTest.html")
+            stylesheet = 'fancy-hist.xsl'
+        }
+    }
+    excludeFilter = file('./config/spotbugs_filter.xml')
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
+// gradle buildを実行した際に、Jacocoでのカバレッジ測定も実行する
+build.dependsOn jacocoTestReport

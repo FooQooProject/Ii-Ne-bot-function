@@ -1,0 +1,42 @@
+spring:
+  profiles:
+    active: default
+    include: prod
+  batch:
+    initialize-schema: never
+    job:
+      enabled: false
+
+extension:
+  api:
+    twitter:
+      oauth:
+        base-url: https://api.twitter.com/oauth2/token
+        connect-timeout: 10000
+        read-timeout: 10000
+        api-key: apiKey
+        api-secret: apiSecret
+        max-in-memory-size: 16777216
+      search:
+        base-url: https://api.twitter.com/1.1/search/tweets.json
+        connect-timeout: 10000
+        read-timeout: 10000
+        api-key: apiKey
+        api-secret: apiSecret
+        max-in-memory-size: 16777216
+      favorite:
+        base-url: https://api.twitter.com/1.1/favorites/create.json
+        connect-timeout: 10000
+        read-timeout: 10000
+        api-key: apiKey
+        api-secret: apiSecret
+        access-token: accessToken
+        access-token-secret: accessTokenSecret
+        max-in-memory-size: 16777216
+      lookup:
+        base-url: https://api.twitter.com/1.1/statuses/lookup.json
+        connect-timeout: 10000
+        read-timeout: 10000
+        api-key: apiKey
+        api-secret: apiSecret
+        max-in-memory-size: 16777216
