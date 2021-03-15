@@ -47,7 +47,6 @@ jobs:
             --entry-point=org.springframework.cloud.function.adapter.gcp.GcfJarLauncher \
             --trigger-topic=favorite \
             --env-vars-file=env.yaml \
-            --source=target \
             --runtime=java11 \
             --memory=1024MB \
             --timeout=300
