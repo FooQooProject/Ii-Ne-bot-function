@@ -1,4 +1,4 @@
-name: Google Functions
+name: test
 
 on:
   push:

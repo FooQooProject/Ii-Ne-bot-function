@@ -4,7 +4,7 @@ buildscript {
     }
     dependencies {
         // Spring Boot Gradle Plugin を使用
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.4.2'
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.4.3'
     }
 }
 
