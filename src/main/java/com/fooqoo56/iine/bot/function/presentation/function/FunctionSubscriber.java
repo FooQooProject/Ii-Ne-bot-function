@@ -2,16 +2,17 @@ package com.fooqoo56.iine.bot.function.presentation.function;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fooqoo56.iine.bot.function.application.service.FavoriteService;
+import com.fooqoo56.iine.bot.function.domain.model.Tweet;
 import com.fooqoo56.iine.bot.function.exception.NotSuccessMappingException;
 import com.fooqoo56.iine.bot.function.presentation.function.dto.PubSubMessage;
 import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualification;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
@@ -48,14 +49,17 @@ public class FunctionSubscriber {
 
         final TweetQualification tweetQualification = mapTweetCondition(getDecodedMessage(message));
         // ツイートのいいね実行 & 同期処理
-        final Boolean isSucceedFavorite =
+        final Optional<Tweet> tweetOptional =
                 favoriteService.favoriteQualifiedTweet(tweetQualification).block();
 
         // NullCheck or いいねが失敗した場合、例外を発生させる
-        if (Objects.isNull(isSucceedFavorite) || BooleanUtils.isFalse(isSucceedFavorite)) {
+        if (Objects.isNull(tweetOptional) || tweetOptional.isEmpty()) {
             log.error("ツイートをいいねできませんでした: " + tweetQualification);
             return Boolean.FALSE;
         }
+
+        // ツイートがnon nullの場合、ログ出力する
+        tweetOptional.ifPresent(tweet -> log.info("ツイートをいいねしました: " + tweet));
 
         return Boolean.TRUE;
     }

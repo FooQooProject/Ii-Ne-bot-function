@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### credential ###
+env.yaml
+ii-ne-bot-*.json

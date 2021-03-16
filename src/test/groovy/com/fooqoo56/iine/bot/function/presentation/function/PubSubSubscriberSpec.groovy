@@ -2,11 +2,13 @@ package com.fooqoo56.iine.bot.function.presentation.function
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fooqoo56.iine.bot.function.application.service.FavoriteService
+import com.fooqoo56.iine.bot.function.domain.model.Tweet
 import com.fooqoo56.iine.bot.function.exception.NotSuccessMappingException
 import com.fooqoo56.iine.bot.function.presentation.function.dto.PubSubMessage
 import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualification
 import reactor.core.publisher.Mono
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
  * PubSubSubscriberのテスト
@@ -32,7 +34,7 @@ class PubSubSubscriberSpec extends Specification {
                 .publishTime("publishTime")
                 .build()
 
-        favoriteService.favoriteQualifiedTweet(*_) >> Mono.just(Boolean.TRUE)
+        favoriteService.favoriteQualifiedTweet(*_) >> Mono.just(Optional.of(Mock(Tweet)))
 
         when:
         final actual = sut.favoriteTweetFunction(message)
@@ -41,6 +43,7 @@ class PubSubSubscriberSpec extends Specification {
         actual == Boolean.TRUE
     }
 
+    @Unroll
     final "favoriteTweetFunction - #caseName"() {
         given:
         // 引数を生成する
@@ -57,9 +60,9 @@ class PubSubSubscriberSpec extends Specification {
         actual == expected
 
         where:
-        caseName      | favoriteTweetResponse    || expected
-        "レスポンスがfalse" | Mono.just(Boolean.FALSE) || Boolean.FALSE
-        "レスポンスがnull"  | Mono.empty()             || Boolean.FALSE
+        caseName           | favoriteTweetResponse       || expected
+        "レスポンスが空のOptional" | Mono.just(Optional.empty()) || Boolean.FALSE
+        "レスポンスがnull"       | Mono.empty()                || Boolean.FALSE
     }
 
     final "mapTweetCondition"() {

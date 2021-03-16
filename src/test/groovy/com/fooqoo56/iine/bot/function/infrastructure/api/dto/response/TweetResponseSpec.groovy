@@ -7,7 +7,7 @@ import spock.lang.Unroll
 class TweetResponseSpec extends Specification {
 
     @Unroll
-    final "isReply"() {
+    final "isReply - #caseName"() {
         given:
         final sut = TweetResponse.builder()
                 .id("967824267948773377")
