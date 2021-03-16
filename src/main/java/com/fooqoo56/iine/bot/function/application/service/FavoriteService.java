@@ -53,7 +53,8 @@ public class FavoriteService {
      * @return ツイートのいいねに成功した場合、trueを返す
      */
     @NonNull
-    public Mono<Boolean> favoriteQualifiedTweet(final TweetQualification tweetQualification) {
+    public Mono<Optional<Tweet>> favoriteQualifiedTweet(
+            final TweetQualification tweetQualification) {
 
         final Qualification qualification = buildQualification(tweetQualification);
 
@@ -77,13 +78,11 @@ public class FavoriteService {
                 .map(this::getTopId)
                 // ツイートのいいねを実行する
                 .flatMap(twitterSharedService::favoriteTweet)
-                // いいねに成功した場合、trueを返す
-                .map(Optional::isPresent)
                 // 条件に合致したツイートが存在しない場合に、ログ出力して、falseを返す
                 .onErrorResume(NotFoundQualifiedTweetException.class,
                         exception -> {
                             log.error(exception.toString());
-                            return Mono.just(Boolean.FALSE);
+                            return Mono.just(Optional.empty());
                         });
     }
 
