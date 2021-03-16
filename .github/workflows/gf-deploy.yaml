@@ -29,7 +29,8 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          ./gradlew build -DskipTests=true
+          ./gradlew clean
+          ./gradlew shadowJar
       - name: GCP Authenticate
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
@@ -48,5 +49,6 @@ jobs:
             --trigger-topic=favorite \
             --env-vars-file=env.yaml \
             --runtime=java11 \
+            --source=build/lib
             --memory=1024MB \
             --timeout=300
