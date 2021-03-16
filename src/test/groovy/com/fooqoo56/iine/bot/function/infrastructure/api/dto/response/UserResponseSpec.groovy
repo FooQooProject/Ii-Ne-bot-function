@@ -7,7 +7,7 @@ import spock.lang.Unroll
 class UserResponseSpec extends Specification {
 
     @Unroll
-    final "isFollow"() {
+    final "isFollow - #caseName"() {
         given:
         final sut = UserResponse.builder()
                 .id("11348282")

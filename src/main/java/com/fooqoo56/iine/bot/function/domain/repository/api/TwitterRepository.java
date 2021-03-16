@@ -24,6 +24,7 @@ public interface TwitterRepository {
      * ツイートのいいね
      *
      * @param id ツイートID
+     * @return いいねAPIのレスポンス
      */
     Mono<TweetResponse> favoriteTweet(final String id);
 
@@ -31,6 +32,7 @@ public interface TwitterRepository {
      * ID指定のツイート取得
      *
      * @param ids ツイートID
+     * @return 取得APIのレスポンス
      */
     Flux<TweetResponse> lookupTweet(final List<String> ids);
 }

@@ -67,12 +67,12 @@ class FavoriteServiceSpec extends Specification {
         actual == expected
 
         where:
-        caseName            | findApiFlux                    | lookupApiFlux              | favoriteApiMono          || expected
-        "正常系"               | getMockTweetFlux()             | getMockTweet()             | Optional.of(Mock(Tweet)) || Boolean.TRUE
-        "全ていいね済みツイート"       | getMockTweetFlux()             | getMockNonFavoritedTweet() | Optional.of(Mock(Tweet)) || Boolean.FALSE
-        "検索がヒットしない"         | Flux.empty()                   | getMockTweet()             | Optional.of(Mock(Tweet)) || Boolean.FALSE
-        "検索結果で要件に合うツイートがない" | getMockQualifiedTweetFluxNon() | getMockTweet()             | Optional.of(Mock(Tweet)) || Boolean.FALSE
-        "いいねAPIのレスポンスが空"    | getMockTweetFlux()             | getMockTweet()             | Optional.empty()         || Boolean.FALSE
+        caseName            | findApiFlux                    | lookupApiFlux              | favoriteApiMono        || expected
+        "正常系"               | getMockTweetFlux()             | getMockTweet()             | getMockOptionalTweet() || getMockOptionalTweet()
+        "全ていいね済みツイート"       | getMockTweetFlux()             | getMockNonFavoritedTweet() | getMockOptionalTweet() || Optional.empty()
+        "検索がヒットしない"         | Flux.empty()                   | getMockTweet()             | getMockOptionalTweet() || Optional.empty()
+        "検索結果で要件に合うツイートがない" | getMockQualifiedTweetFluxNon() | getMockTweet()             | getMockOptionalTweet() || Optional.empty()
+        "いいねAPIのレスポンスが空"    | getMockTweetFlux()             | getMockTweet()             | Optional.empty()       || Optional.empty()
     }
 
     final "buildTweetRequest"() {
@@ -313,6 +313,36 @@ class FavoriteServiceSpec extends Specification {
         "ツイート = 要件(100)" | 100          | 100                 || true
         "ツイート > 要件(100)" | 101          | 100                 || true
         "ツイート < 要件(100)" | 99           | 100                 || false
+    }
+
+    /**
+     * ツイートのOptionalを取得する
+     *
+     * @return ツイートのOptional
+     */
+    private static final getMockOptionalTweet() {
+        return Optional.of(Tweet.builder()
+                .id("967824267948773377")
+                .text("From pilot to astronaut, Robert H. Lawrence was the first African-American to be selected as an astronaut by any na… https://t.co/FjPEWnh804")
+                .user(User.builder()
+                        .id("11348282")
+                        .followersCount(28605561)
+                        .friendsCount(270)
+                        .listedCount(90405)
+                        .favouritesCount(2960)
+                        .statusesCount(50713)
+                        .follow(false)
+                        .defaultProfile(false)
+                        .defaultProfileImage(false)
+                        .build())
+                .retweetCount(988)
+                .favoriteCount(3875)
+                .retweet(false)
+                .sensitive(false)
+                .quote(false)
+                .reply(false)
+                .favorite(false)
+                .build())
     }
 
     /**
