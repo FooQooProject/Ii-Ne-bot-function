@@ -10,7 +10,6 @@ on:
 
 env:
   FUNCTION_ENV: ${{ secrets.FUNCTION_ENV }}
-  GCP_SA_EMAIL: ${{ secrets.GCP_SA_EMAIL }}
   GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
   GCP_SA_PROJECT_ID: ${{ secrets.GCP_SA_PROJECT_ID }}
 
@@ -31,11 +30,11 @@ jobs:
         run: |
           ./gradlew clean
           ./gradlew shadowJar
-      - name: GCP Authenticate
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
         with:
-          version: "290.0.1"
-          service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+          project_id: ${{ secrets.GCP_SA_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
