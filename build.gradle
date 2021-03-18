@@ -130,15 +130,23 @@ spotbugsTest {
     excludeFilter = file('./config/spotbugs_filter.xml')
 }
 
+test.finalizedBy jacocoTestReport
+
 jacocoTestReport {
     reports {
         xml.enabled = true
         html.enabled = true
     }
-}
 
-// gradle buildを実行した際に、Jacocoでのカバレッジ測定も実行する
-build.dependsOn jacocoTestReport
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(
+                    dir: it,
+                    exclude: ['**/IiNeBotFunctionApplication.class', '**/*Exception.class', '**/config/**']
+            )
+        }))
+    }
+}
 
 import com.github.jengelman.gradle.plugins.shadow.transformers.PropertiesFileTransformer
 

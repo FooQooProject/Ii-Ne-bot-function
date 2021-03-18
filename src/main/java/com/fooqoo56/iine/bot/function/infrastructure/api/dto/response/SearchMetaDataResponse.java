@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
 
 /**
  * ツイッター検索APIのレスポンスに含まれるメタデータ
@@ -25,6 +24,5 @@ public class SearchMetaDataResponse implements Serializable {
      * 次のカーソルを取得するクエリパラメータ
      */
     @JsonProperty("next_results")
-    @NonNull
     private String nextResults;
 }
