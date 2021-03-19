@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.lang.NonNull;
 
 /**
  * ツイッター検索APIのレスポンスに含まれるツイートデータ
@@ -90,5 +92,91 @@ public class TweetResponse implements Serializable {
      */
     public boolean isReply() {
         return Objects.nonNull(inReplyToStatusId);
+    }
+
+    /**
+     * センシティブ指定であるか
+     *
+     * @return センシティブ指定の場合、trueを返す
+     */
+    public boolean isSensitive() {
+        return BooleanUtils.isTrue(sensitiveFlag);
+    }
+
+    /**
+     * いいね済であるか
+     *
+     * @return いいね済の場合、trueを返す
+     */
+    public boolean isFavorite() {
+        return BooleanUtils.isTrue(favoriteFlag);
+    }
+
+    /**
+     * リツイート済であるか
+     *
+     * @return リツイート済の場合、trueを返す
+     */
+    public boolean isRetweet() {
+        return BooleanUtils.isTrue(retweetFlag);
+    }
+
+    /**
+     * 引用ツイートであるか
+     *
+     * @return リツイート済の場合、trueを返す
+     */
+    public boolean isQuote() {
+        return BooleanUtils.isTrue(quoteFlag);
+    }
+
+    /**
+     * idの取得(NullCheck実施)
+     *
+     * @return ツイートID
+     */
+    @NonNull
+    public String getIdWithNullCheck() {
+        return Objects.requireNonNull(id, "フィールドがnullです: TweetResponse.id");
+    }
+
+    /**
+     * textの取得(NullCheck実施)
+     *
+     * @return ツイート本文
+     */
+    @NonNull
+    public String getTextWithNullCheck() {
+        return Objects.requireNonNull(text, "フィールドがnullです: TweetResponse.text");
+    }
+
+    /**
+     * retweetCountの取得(NullCheck実施)
+     *
+     * @return リツイート数
+     */
+    @NonNull
+    public Integer getRetweetCountWithNullCheck() {
+        return Objects.requireNonNull(retweetCount, "フィールドがnullです: TweetResponse.retweetCount");
+    }
+
+    /**
+     * favoriteCountの取得(NullCheck実施)
+     *
+     * @return いいね数
+     */
+    @NonNull
+    public Integer getFavoriteCountWithNullCheck() {
+        return Objects.requireNonNull(favoriteCount, "フィールドがnullです: TweetResponse.favoriteCount");
+    }
+
+    /**
+     * userの取得(NullCheck実施)
+     *
+     * @return ユーザ
+     */
+    @NonNull
+    public UserResponse getUserWithNullCheck() {
+        return Objects.requireNonNull(user, "フィールドがnullです: TweetResponse.user");
     }
 }
