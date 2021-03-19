@@ -5,12 +5,14 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.springframework.lang.NonNull;
 
 /**
  * いいね要件
  */
 @Getter
+@ToString
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @Builder

@@ -5,12 +5,14 @@ import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.springframework.lang.NonNull;
 
 /**
  * Google Cloud PubsubからPublishされるメッセージ
  */
 @Getter
+@ToString
 @RequiredArgsConstructor
 @Builder
 public class PubSubMessage implements Serializable {

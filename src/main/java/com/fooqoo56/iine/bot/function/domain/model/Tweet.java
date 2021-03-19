@@ -12,9 +12,9 @@ import org.springframework.lang.NonNull;
  * ツイート
  */
 @Getter
+@ToString
 @RequiredArgsConstructor
 @EqualsAndHashCode
-@ToString
 @Builder
 public class Tweet implements Serializable {
 
