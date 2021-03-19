@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.springframework.lang.NonNull;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.lang.NonNull;
 @Getter
 @RequiredArgsConstructor
 @EqualsAndHashCode
+@ToString
 @Builder
 public class Tweet implements Serializable {
 

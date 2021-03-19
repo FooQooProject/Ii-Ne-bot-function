@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -81,16 +80,16 @@ public class TwitterSharedService {
     @NonNull
     private Tweet buildTweet(final TweetResponse tweetResponse) {
         return Tweet.builder()
-                .id(tweetResponse.getId())
-                .text(tweetResponse.getText())
-                .retweetCount(tweetResponse.getRetweetCount())
-                .favoriteCount(tweetResponse.getFavoriteCount())
-                .favorite(tweetResponse.getFavoriteFlag())
-                .retweet(tweetResponse.getRetweetFlag())
-                .sensitive(BooleanUtils.isTrue(tweetResponse.getSensitiveFlag()))
-                .quote(tweetResponse.getQuoteFlag())
+                .id(tweetResponse.getIdWithNullCheck())
+                .text(tweetResponse.getTextWithNullCheck())
+                .retweetCount(tweetResponse.getRetweetCountWithNullCheck())
+                .favoriteCount(tweetResponse.getFavoriteCountWithNullCheck())
+                .favorite(tweetResponse.isFavorite())
+                .retweet(tweetResponse.isRetweet())
+                .sensitive(tweetResponse.isSensitive())
+                .quote(tweetResponse.isQuote())
                 .reply(tweetResponse.isReply())
-                .user(buildUser(tweetResponse.getUser()))
+                .user(buildUser(tweetResponse.getUserWithNullCheck()))
                 .build();
     }
 
@@ -103,16 +102,15 @@ public class TwitterSharedService {
     @NonNull
     private User buildUser(final UserResponse userResponse) {
         return User.builder()
-                .id(userResponse.getId())
-                .followersCount(userResponse.getFollowersCount())
-                .friendsCount(userResponse.getFriendsCount())
-                .listedCount(userResponse.getListedCount())
-                .favouritesCount(userResponse.getFavouritesCount())
-                .friendsCount(userResponse.getFriendsCount())
-                .statusesCount(userResponse.getStatusesCount())
+                .id(userResponse.getIdWithNullCheck())
+                .followersCount(userResponse.getFollowersCountWithNullCheck())
+                .friendsCount(userResponse.getFriendsCountWithNullCheck())
+                .listedCount(userResponse.getListedCountWithNullCheck())
+                .favouritesCount(userResponse.getFavouritesCountWithNullCheck())
+                .statusesCount(userResponse.getStatusesCountWithNullCheck())
                 .follow(userResponse.isFollow())
-                .defaultProfile(userResponse.getDefaultProfileFlag())
-                .defaultProfileImage(userResponse.getDefaultProfileImageFlag())
+                .defaultProfile(userResponse.isDefaultProfile())
+                .defaultProfileImage(userResponse.isDefaultProfileImage())
                 .build();
     }
 }

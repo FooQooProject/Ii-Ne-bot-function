@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
 
 /**
  * ツイッター検索APIのレスポンス
@@ -30,13 +29,11 @@ public class TweetListResponse implements Serializable {
      * ツイートのリスト
      */
     @JsonProperty("statuses")
-    @NonNull
     private List<TweetResponse> statuses;
 
     /**
      * ツイッター検索APIのレスポンスに含まれるメタデータ
      */
     @JsonProperty("search_metadata")
-    @NonNull
     private SearchMetaDataResponse searchMetaDataResponse;
 }

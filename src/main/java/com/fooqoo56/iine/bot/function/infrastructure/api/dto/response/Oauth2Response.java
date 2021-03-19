@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
 
 /**
  * Oauth2.0のリクエストボディ
@@ -27,13 +26,11 @@ public class Oauth2Response implements Serializable {
      * Token Type
      */
     @JsonProperty("token_type")
-    @NonNull
     private String tokenType;
 
     /**
      * Access Token
      */
     @JsonProperty("access_token")
-    @NonNull
     private String accessToken;
 }
