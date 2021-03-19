@@ -246,6 +246,8 @@ class FavoriteServiceSpec extends Specification {
         "sensitive - 要件外"      | "nodejs, spring boot" | 10             | 10           | 100           | 10           | 10            | true      | false | false | false  || false
         "quote - 要件外"          | "nodejs, spring boot" | 10             | 10           | 100           | 10           | 10            | false     | true  | false | false  || false
         "reply - 要件外"          | "nodejs, spring boot" | 10             | 10           | 100           | 10           | 10            | false     | false | true  | false  || false
+        "follow - 要件外"         | "nodejs, spring boot" | 10             | 10           | 100           | 10           | 10            | false     | false | false | true   || false
+
     }
 
     @Unroll
