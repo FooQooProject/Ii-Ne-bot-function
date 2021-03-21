@@ -1,5 +1,6 @@
 package com.fooqoo56.iine.bot.function.domain.repository.api;
 
+import com.fooqoo56.iine.bot.function.domain.model.TwitterUser;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.TweetListResponse;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.TweetResponse;
@@ -18,7 +19,7 @@ public interface TwitterRepository {
      * @param request TweetRequest
      * @return TwitterFollowerResponse
      */
-    Mono<TweetListResponse> findTweet(final TweetRequest request);
+    Mono<TweetListResponse> findTweet(final TweetRequest request, final TwitterUser twitterUser);
 
     /**
      * ツイートのいいね
@@ -26,7 +27,7 @@ public interface TwitterRepository {
      * @param id ツイートID
      * @return いいねAPIのレスポンス
      */
-    Mono<TweetResponse> favoriteTweet(final String id);
+    Mono<TweetResponse> favoriteTweet(final String id, final TwitterUser twitterUser);
 
     /**
      * ID指定のツイート取得
@@ -34,5 +35,5 @@ public interface TwitterRepository {
      * @param ids ツイートID
      * @return 取得APIのレスポンス
      */
-    Flux<TweetResponse> lookupTweet(final List<String> ids);
+    Flux<TweetResponse> lookupTweet(final List<String> ids, final TwitterUser twitterUser);
 }

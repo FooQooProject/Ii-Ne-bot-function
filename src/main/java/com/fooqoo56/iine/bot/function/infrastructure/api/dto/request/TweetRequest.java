@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.springframework.lang.NonNull;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -17,6 +18,7 @@ import org.springframework.util.MultiValueMap;
  * ツイート検索APIのリクエストパラメータ
  */
 @Getter
+@ToString
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @Builder

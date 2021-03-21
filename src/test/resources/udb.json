@@ -1,0 +1,9 @@
+{
+  "user": {
+    "userId": "userId",
+    "apiKey": "apiKey",
+    "apiSecret": "apiSecret",
+    "accessToken": "accessToken",
+    "accessTokenSecret": "accessTokenSecret"
+  }
+}

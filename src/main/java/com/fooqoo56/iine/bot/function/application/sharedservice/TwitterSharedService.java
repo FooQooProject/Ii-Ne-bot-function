@@ -1,6 +1,7 @@
 package com.fooqoo56.iine.bot.function.application.sharedservice;
 
 import com.fooqoo56.iine.bot.function.domain.model.Tweet;
+import com.fooqoo56.iine.bot.function.domain.model.TwitterUser;
 import com.fooqoo56.iine.bot.function.domain.model.User;
 import com.fooqoo56.iine.bot.function.domain.repository.api.TwitterRepository;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest;
@@ -34,8 +35,8 @@ public class TwitterSharedService {
      * @return TweetのFlux
      */
     @NonNull
-    public Flux<Tweet> findTweet(final TweetRequest request) {
-        return twitterRepository.findTweet(request)
+    public Flux<Tweet> findTweet(final TweetRequest request, final TwitterUser twitterUser) {
+        return twitterRepository.findTweet(request, twitterUser)
                 .map(TweetListResponse::getStatuses)
                 .flatMapMany(Flux::fromIterable)
                 .map(this::buildTweet);
@@ -48,8 +49,8 @@ public class TwitterSharedService {
      * @return TweetのOptional
      */
     @NonNull
-    public Mono<Optional<Tweet>> favoriteTweet(final String id) {
-        return twitterRepository.favoriteTweet(id)
+    public Mono<Optional<Tweet>> favoriteTweet(final String id, final TwitterUser twitterUser) {
+        return twitterRepository.favoriteTweet(id, twitterUser)
                 .map(this::buildTweet)
                 .map(Optional::of)
                 .onErrorResume(WebClientResponseException.class,
@@ -66,8 +67,8 @@ public class TwitterSharedService {
      * @return TweetのFlux
      */
     @NonNull
-    public Flux<Tweet> lookUpTweet(final List<String> idList) {
-        return twitterRepository.lookupTweet(idList)
+    public Flux<Tweet> lookUpTweet(final List<String> idList, final TwitterUser twitterUser) {
+        return twitterRepository.lookupTweet(idList, twitterUser)
                 .map(this::buildTweet);
     }
 

@@ -28,7 +28,7 @@ class PubSubSubscriberSpec extends Specification {
         given:
         // 引数を生成する
         final message = PubSubMessage.builder()
-                .data("eyJxdWVyeSI6ICJOZXh0LmpzIiwgInJldHdlZXRDb3VudCI6IDAsICJmYXZvcml0ZUNvdW50IjogMywgImZvbGxvd2Vyc0NvdW50IjogMTAsICJmcmllbmRzQ291bnQiOiAxMH0K")
+                .data("eyJ1c2VySWQiOiAiamZRRDZJNkpHd3ZkUzVReWpSbWciLCAicXVlcnkiOiAiTmV4dC5qcyIsICJyZXR3ZWV0Q291bnQiOiAwLCAiZmF2b3JpdGVDb3VudCI6IDMsICJmb2xsb3dlcnNDb3VudCI6IDEwLCAiZnJpZW5kc0NvdW50IjogMTB9Cg==")
                 .attributes(Map.of("key", "value"))
                 .messageId("id")
                 .publishTime("publishTime")
@@ -68,10 +68,11 @@ class PubSubSubscriberSpec extends Specification {
     final "mapTweetCondition"() {
         given:
         // 引数を作成
-        final data = "{\"query\": \"Next.js\", \"retweetCount\": 0, \"favoriteCount\": 3, \"followersCount\": 10, \"friendsCount\": 10}"
+        final data = "{\"userId\": \"userId\", \"query\": \"Next.js\", \"retweetCount\": 0, \"favoriteCount\": 3, \"followersCount\": 10, \"friendsCount\": 10}"
 
         // 期待値を生成
         final expected = TweetQualification.builder()
+                .userId("userId")
                 .query("Next.js")
                 .retweetCount(0)
                 .favoriteCount(3)
