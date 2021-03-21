@@ -6,31 +6,21 @@ extension:
         base-url: https://api.twitter.com/oauth2/token
         connect-timeout: 10000
         read-timeout: 10000
-        api-key: ${API_KEY}
-        api-secret: ${API_SECRET}
         max-in-memory-size: 16777216
       search:
         base-url: https://api.twitter.com/1.1/search/tweets.json
         connect-timeout: 10000
         read-timeout: 10000
-        api-key: ${API_KEY}
-        api-secret: ${API_SECRET}
         max-in-memory-size: 16777216
       favorite:
         base-url: https://api.twitter.com/1.1/favorites/create.json
         connect-timeout: 10000
         read-timeout: 10000
-        api-key: ${API_KEY}
-        api-secret: ${API_SECRET}
-        access-token: ${ACCESS_TOKEN}
-        access-token-secret: ${ACCESS_TOKEN_SECRET}
         max-in-memory-size: 16777216
       lookup:
         base-url: https://api.twitter.com/1.1/statuses/lookup.json
         connect-timeout: 10000
         read-timeout: 10000
-        api-key: ${API_KEY}
-        api-secret: ${API_SECRET}
         max-in-memory-size: 16777216
     google:
       auth:

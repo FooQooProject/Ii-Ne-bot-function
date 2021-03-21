@@ -41,7 +41,7 @@ public class FireStoreRepositoryImpl implements FireStoreRepository {
      *
      * @return bearerToken
      */
-    private Mono<String> getBearerToken() {
+    protected Mono<String> getBearerToken() {
         return bearerTokenGoogleClient
                 .get()
                 .retrieve()

@@ -68,10 +68,11 @@ class PubSubSubscriberSpec extends Specification {
     final "mapTweetCondition"() {
         given:
         // 引数を作成
-        final data = "{\"query\": \"Next.js\", \"retweetCount\": 0, \"favoriteCount\": 3, \"followersCount\": 10, \"friendsCount\": 10}"
+        final data = "{\"userId\": \"userId\", \"query\": \"Next.js\", \"retweetCount\": 0, \"favoriteCount\": 3, \"followersCount\": 10, \"friendsCount\": 10}"
 
         // 期待値を生成
         final expected = TweetQualification.builder()
+                .userId("userId")
                 .query("Next.js")
                 .retweetCount(0)
                 .favoriteCount(3)

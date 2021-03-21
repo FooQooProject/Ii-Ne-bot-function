@@ -41,10 +41,6 @@ class TwitterRepositoryImplSpec extends Specification {
         apiSetting.setBaseUrl("url")
         apiSetting.setConnectTimeout(Duration.ofMillis(1000))
         apiSetting.setReadTimeout(Duration.ofMillis(1000))
-        apiSetting.setApikey("apiKey")
-        apiSetting.setApiSecret("apiSecret")
-        apiSetting.setAccessToken("accessToken")
-        apiSetting.setAccessTokenSecret("accessTokenSecret")
         apiSetting.setMaxInMemorySize(16777216)
 
         clock = Clock.fixed(ZonedDateTime.of(
