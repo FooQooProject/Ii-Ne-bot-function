@@ -142,7 +142,12 @@ jacocoTestReport {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(
                     dir: it,
-                    exclude: ['**/IiNeBotFunctionApplication.class', '**/*Exception.class', '**/config/**']
+                    exclude: [
+                            '**/IiNeBotFunctionApplication.class',
+                            '**/*Exception.class',
+                            '**/config/**',
+                            '**/*Sandbox*.class'
+                    ]
             )
         }))
     }

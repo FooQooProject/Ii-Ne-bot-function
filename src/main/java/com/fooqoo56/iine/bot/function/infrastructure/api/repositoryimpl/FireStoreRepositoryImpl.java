@@ -47,6 +47,4 @@ public class FireStoreRepositoryImpl implements FireStoreRepository {
                 .retrieve()
                 .bodyToMono(String.class);
     }
-
-
 }
