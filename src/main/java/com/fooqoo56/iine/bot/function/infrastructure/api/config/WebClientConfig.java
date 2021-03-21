@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.lang.NonNull;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
@@ -83,6 +82,28 @@ public class WebClientConfig {
     @Bean
     @ConfigurationProperties(prefix = "extension.api.twitter.oauth")
     public ApiSetting twitterOauthApiSetting() {
+        return new ApiSetting();
+    }
+
+    /**
+     * Googleの認証APIの設定
+     *
+     * @return GoogleSetting
+     */
+    @Bean
+    @ConfigurationProperties(prefix = "extension.api.google.auth")
+    public ApiSetting googleAuthApiSetting() {
+        return new ApiSetting();
+    }
+
+    /**
+     * UDBの取得API
+     *
+     * @return UDB
+     */
+    @Bean
+    @ConfigurationProperties(prefix = "extension.api.google.udb")
+    public ApiSetting udbApiSetting() {
         return new ApiSetting();
     }
 
@@ -165,9 +186,53 @@ public class WebClientConfig {
 
         return WebClient.builder()
                 .baseUrl(apiSetting.getBaseUrl())
+                .exchangeStrategies(STRATEGY.apply(apiSetting.getMaxInMemorySize()))
                 .clientConnector(connector)
-                .filter(ExchangeFilterFunctions
-                        .basicAuthentication(apiSetting.getApikey(), apiSetting.getApiSecret()))
                 .build();
+    }
+
+    /**
+     * Googleの認証トークンを取得するWebClient取得
+     *
+     * @param apiSetting API設定
+     * @return WebClient
+     */
+    @Bean
+    @NonNull
+    public WebClient bearerTokenGoogleClient(
+            @Qualifier(value = "googleAuthApiSetting") final ApiSetting apiSetting) {
+
+        final ReactorClientHttpConnector connector = CONNECTOR
+                .apply(apiSetting.getConnectTimeout(), apiSetting.getReadTimeout());
+
+        return WebClient.builder()
+                .baseUrl(apiSetting.getBaseUrl())
+                .exchangeStrategies(STRATEGY.apply(apiSetting.getMaxInMemorySize()))
+                .clientConnector(connector)
+                .defaultHeader("Metadata-Flavor", "Google")
+                .build();
+
+    }
+
+    /**
+     * ユーザ情報を取得するWebClient取得
+     *
+     * @param apiSetting API設定
+     * @return WebClient
+     */
+    @Bean
+    @NonNull
+    public WebClient udbClient(
+            @Qualifier(value = "udbApiSetting") final ApiSetting apiSetting) {
+
+        final ReactorClientHttpConnector connector = CONNECTOR
+                .apply(apiSetting.getConnectTimeout(), apiSetting.getReadTimeout());
+
+        return WebClient.builder()
+                .baseUrl(apiSetting.getBaseUrl())
+                .exchangeStrategies(STRATEGY.apply(apiSetting.getMaxInMemorySize()))
+                .clientConnector(connector)
+                .build();
+
     }
 }

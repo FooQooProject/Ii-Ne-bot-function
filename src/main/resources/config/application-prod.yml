@@ -32,3 +32,14 @@ extension:
         api-key: ${API_KEY}
         api-secret: ${API_SECRET}
         max-in-memory-size: 16777216
+    google:
+      auth:
+        base-url: http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=https://us-central1-ii-ne-bot.cloudfunctions.net/api
+        connect-timeout: 10000
+        read-timeout: 10000
+        max-in-memory-size: 16777216
+      udb:
+        base-url: https://us-central1-ii-ne-bot.cloudfunctions.net/api/v1/user/
+        connect-timeout: 10000
+        read-timeout: 10000
+        max-in-memory-size: 16777216

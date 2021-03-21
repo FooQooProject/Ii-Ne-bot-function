@@ -1,5 +1,6 @@
 package com.fooqoo56.iine.bot.function.infrastructure.api.repositoryimpl;
 
+import com.fooqoo56.iine.bot.function.domain.model.TwitterUser;
 import com.fooqoo56.iine.bot.function.domain.repository.api.TwitterRepository;
 import com.fooqoo56.iine.bot.function.exception.NotSuccessGetOauthHmacSignerException;
 import com.fooqoo56.iine.bot.function.infrastructure.api.config.ApiSetting;
@@ -50,8 +51,9 @@ public class TwitterRepositoryImpl implements TwitterRepository {
      */
     @Override
     @NonNull
-    public Mono<TweetListResponse> findTweet(final TweetRequest request) {
-        return getBearerToken()
+    public Mono<TweetListResponse> findTweet(final TweetRequest request,
+                                             final TwitterUser twitterUser) {
+        return getBearerToken(twitterUser)
                 .map(Oauth2Response::getAccessToken)
                 .flatMap(
                         accessToken -> twitterSearchClient
@@ -69,13 +71,13 @@ public class TwitterRepositoryImpl implements TwitterRepository {
      */
     @Override
     @NonNull
-    public Mono<TweetResponse> favoriteTweet(final String id)
+    public Mono<TweetResponse> favoriteTweet(final String id, final TwitterUser twitterUser)
             throws NotSuccessGetOauthHmacSignerException {
         return twitterFavoriteClient
                 .post()
                 .uri(uriBuilder -> uriBuilder.queryParam(ID_PARAM, id).build())
                 .header(HttpHeaders.AUTHORIZATION,
-                        buildOauthAuthorizationHeaderBuilder(id).getOauthHeader())
+                        buildOauthAuthorizationHeaderBuilder(twitterUser, id).getOauthHeader())
                 .retrieve()
                 .bodyToMono(TweetResponse.class);
     }
@@ -85,8 +87,8 @@ public class TwitterRepositoryImpl implements TwitterRepository {
      */
     @Override
     @NonNull
-    public Flux<TweetResponse> lookupTweet(final List<String> ids) {
-        return getBearerToken()
+    public Flux<TweetResponse> lookupTweet(final List<String> ids, final TwitterUser twitterUser) {
+        return getBearerToken(twitterUser)
                 .map(Oauth2Response::getAccessToken)
                 .flatMapMany(
                         accessToken -> twitterLookupClient
@@ -106,12 +108,14 @@ public class TwitterRepositoryImpl implements TwitterRepository {
      * @return Oauth2Response
      */
     @NonNull
-    protected Mono<Oauth2Response> getBearerToken() {
+    protected Mono<Oauth2Response> getBearerToken(final TwitterUser twitterUser) {
         final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "client_credentials");
 
         return bearerTokenTwitterClient
                 .post()
+                .headers(httpHeaders -> httpHeaders
+                        .setBasicAuth(twitterUser.getApiKey(), twitterUser.getApiSecret()))
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(Oauth2Response.class);
@@ -125,15 +129,15 @@ public class TwitterRepositoryImpl implements TwitterRepository {
      */
     @NonNull
     protected OauthAuthorizationHeaderBuilder buildOauthAuthorizationHeaderBuilder(
-            final String id) {
+            final TwitterUser twitterUser, final String id) {
         return OauthAuthorizationHeaderBuilder
                 .builder()
                 .method(HttpMethod.POST.name().toUpperCase())
                 .url(twitterFavoriteApiSetting.getBaseUrl())
-                .consumerSecret(twitterFavoriteApiSetting.getApiSecret())
-                .tokenSecret(twitterFavoriteApiSetting.getAccessTokenSecret())
-                .accessToken(twitterFavoriteApiSetting.getAccessToken())
-                .consumerKey(twitterFavoriteApiSetting.getApikey())
+                .consumerSecret(twitterUser.getApiSecret())
+                .tokenSecret(twitterUser.getAccessTokenSecret())
+                .accessToken(twitterUser.getAccessToken())
+                .consumerKey(twitterUser.getApiKey())
                 .queryParameters(Map.of(ID_PARAM, id))
                 .instant(Instant.now(clock))
                 .secureRandom(secureRandom)

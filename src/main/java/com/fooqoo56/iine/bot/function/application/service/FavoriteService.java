@@ -7,6 +7,8 @@ import static com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.Twee
 import com.fooqoo56.iine.bot.function.application.sharedservice.TwitterSharedService;
 import com.fooqoo56.iine.bot.function.domain.model.Qualification;
 import com.fooqoo56.iine.bot.function.domain.model.Tweet;
+import com.fooqoo56.iine.bot.function.domain.model.TwitterUser;
+import com.fooqoo56.iine.bot.function.domain.repository.api.FireStoreRepository;
 import com.fooqoo56.iine.bot.function.exception.NotFoundQualifiedTweetException;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.Lang;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.ResultType;
@@ -44,6 +46,8 @@ public class FavoriteService {
     private static final int NUM_OF_TOP_TWEET = 30;
 
     private final TwitterSharedService twitterSharedService;
+    private final FireStoreRepository fireStoreRepository;
+
     private final Clock clock;
 
     /**
@@ -60,30 +64,52 @@ public class FavoriteService {
 
         final TweetRequest request = buildTweetRequest(qualification);
 
-        return twitterSharedService.findTweet(request)
-                // いいね要件に合致したツイートのみフィルタリングする
-                .filter(tweet -> isQualifiedTweet(tweet, qualification))
-                .collectList()
-                .log("collectList")
-                // いいね数の降順ソート実施する
-                .map(this::sortTweetOrderByFavoritesCountDesc)
-                // ソート後のリストの先頭を取得する
-                .map(this::getTopIdList)
-                // ID指定でツイートを取得する -> いいね未実施ツイートのみフィルタリング -> IDのリストに変換
-                .flatMap(this::filterNonFavoritedTweet)
-                // 条件にあったツイートの件数をログ出力
-                .doOnNext(idList -> log
-                        .info("要件と合致したツイートの件数: {}/{}", idList.size(), NUM_OF_TOP_TWEET))
-                // 先頭一件を取得する
-                .map(this::getTopId)
-                // ツイートのいいねを実行する
-                .flatMap(twitterSharedService::favoriteTweet)
+        return getTwitterUser(tweetQualification.getUserId())
+                .flatMap(twitterUser -> twitterSharedService.findTweet(request, twitterUser)
+                        // いいね要件に合致したツイートのみフィルタリングする
+                        .filter(tweet -> isQualifiedTweet(tweet, qualification))
+                        .collectList()
+                        .log("collectList")
+                        // いいね数の降順ソート実施する
+                        .map(this::sortTweetOrderByFavoritesCountDesc)
+                        // ソート後のリストの先頭を取得する
+                        .map(this::getTopIdList)
+                        // ID指定でツイートを取得する -> いいね未実施ツイートのみフィルタリング -> IDのリストに変換
+                        .flatMap(ids -> this.filterNonFavoritedTweet(ids, twitterUser))
+                        // 条件にあったツイートの件数をログ出力
+                        .doOnNext(idList -> log
+                                .info("要件と合致したツイートの件数: {}/{}", idList.size(), NUM_OF_TOP_TWEET))
+                        // 先頭一件を取得する
+                        .map(this::getTopId)
+                        // ツイートのいいねを実行する
+                        .flatMap(id -> twitterSharedService.favoriteTweet(id, twitterUser)))
                 // 条件に合致したツイートが存在しない場合に、ログ出力して、falseを返す
                 .onErrorResume(NotFoundQualifiedTweetException.class,
                         exception -> {
                             log.error(exception.toString());
                             return Mono.just(Optional.empty());
-                        });
+                        })
+                // Mono.emptyの場合、Optional.emptyを返す
+                .switchIfEmpty(Mono.just(Optional.empty()));
+
+
+    }
+
+    /**
+     * ツイッターユーザ取得
+     *
+     * @param id ID
+     * @return ツイッターユーザ
+     */
+    @NonNull
+    private Mono<TwitterUser> getTwitterUser(final String id) {
+        return fireStoreRepository.getTwitterUser(id)
+                .map(udbResponse -> TwitterUser.builder()
+                        .apiKey(udbResponse.getUser().getApiKey())
+                        .apiSecret(udbResponse.getUser().getApiSecret())
+                        .accessToken(udbResponse.getUser().getAccessToken())
+                        .accessTokenSecret(udbResponse.getUser().getAccessTokenSecret())
+                        .build());
     }
 
     /**
@@ -113,9 +139,10 @@ public class FavoriteService {
      * @return いいね未実施ツイートをフィルタしたIDのリスト
      */
     @NonNull
-    private Mono<List<String>> filterNonFavoritedTweet(final List<String> idList) {
+    private Mono<List<String>> filterNonFavoritedTweet(final List<String> idList,
+                                                       final TwitterUser twitterUser) {
         return Mono.just(idList)
-                .flatMapMany(twitterSharedService::lookUpTweet)
+                .flatMapMany(ids -> twitterSharedService.lookUpTweet(ids, twitterUser))
                 .filter(Tweet::isNotFavorite)
                 .map(Tweet::getId)
                 .collectList();

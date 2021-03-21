@@ -20,12 +20,20 @@ import org.springframework.lang.NonNull;
 @Builder
 public class TweetQualification implements Serializable {
 
+    public static final String PARAM_USER_ID = "userId";
     public static final String PARAM_QUERY = "query";
     public static final String PARAM_RETWEET_COUNT = "retweetCount";
     public static final String PARAM_FAVORITE_COUNT = "favoriteCount";
     public static final String PARAM_FOLLOWERS_COUNT = "followersCount";
     public static final String PARAM_FRIENDS_COUNT = "friendsCount";
     private static final long serialVersionUID = 756620699363145836L;
+
+    /**
+     * 対象ユーザ
+     */
+    @NonNull
+    private final String userId;
+
     /**
      * キーワード
      */
@@ -67,12 +75,14 @@ public class TweetQualification implements Serializable {
      */
     @JsonCreator
     public TweetQualification(
+            @NonNull @JsonProperty(PARAM_USER_ID) final String userId,
             @NonNull @JsonProperty(PARAM_QUERY) final String query,
             @NonNull @JsonProperty(PARAM_RETWEET_COUNT) final Integer retweetCount,
             @NonNull @JsonProperty(PARAM_FAVORITE_COUNT) final Integer favoriteCount,
             @NonNull @JsonProperty(PARAM_FOLLOWERS_COUNT) final Integer followersCount,
             @NonNull @JsonProperty(PARAM_FRIENDS_COUNT) final Integer friendsCount
     ) {
+        this.userId = userId;
         this.query = query;
         this.retweetCount = retweetCount;
         this.favoriteCount = favoriteCount;
