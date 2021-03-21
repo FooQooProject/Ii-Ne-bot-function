@@ -3,11 +3,14 @@ package com.fooqoo56.iine.bot.function.application.service
 import com.fooqoo56.iine.bot.function.application.sharedservice.TwitterSharedService
 import com.fooqoo56.iine.bot.function.domain.model.Qualification
 import com.fooqoo56.iine.bot.function.domain.model.Tweet
+import com.fooqoo56.iine.bot.function.domain.model.TwitterUser
 import com.fooqoo56.iine.bot.function.domain.model.User
+import com.fooqoo56.iine.bot.function.domain.repository.api.FireStoreRepository
 import com.fooqoo56.iine.bot.function.exception.NotFoundQualifiedTweetException
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.Lang
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.ResultType
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest
+import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.UdbResponse
 import com.fooqoo56.iine.bot.function.presentation.function.dto.TweetQualification
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -26,6 +29,7 @@ class FavoriteServiceSpec extends Specification {
 
     private FavoriteService sut
     private TwitterSharedService twitterSharedService
+    private FireStoreRepository fireStoreRepository
 
     final setup() {
         final clock = Clock.fixed(ZonedDateTime.of(
@@ -37,8 +41,19 @@ class FavoriteServiceSpec extends Specification {
                 12,
                 0, ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
 
+        fireStoreRepository = Mock(FireStoreRepository) {
+            getTwitterUser(*_) >> Mono.just(UdbResponse.builder()
+                    .user(UdbResponse.TwitterUserResponse.builder()
+                            .userId("userId")
+                            .apiKey("apiKey")
+                            .apiSecret("apiSecret")
+                            .accessToken("accessToken")
+                            .accessTokenSecret("accessTokenSecret")
+                            .build())
+                    .build())
+        }
         twitterSharedService = Mock(TwitterSharedService)
-        sut = new FavoriteService(twitterSharedService, clock)
+        sut = new FavoriteService(twitterSharedService, fireStoreRepository, clock)
     }
 
     @Unroll
@@ -53,6 +68,7 @@ class FavoriteServiceSpec extends Specification {
 
         // 引数を作成する
         final qualification = TweetQualification.builder()
+                .userId("userId")
                 .query("http")
                 .retweetCount(0)
                 .favoriteCount(0)
@@ -109,7 +125,7 @@ class FavoriteServiceSpec extends Specification {
         final expected = ["aaa", "bbb", "ccc"]
 
         when:
-        final actual = sut.filterNonFavoritedTweet(["aaa", "bbb", "ccc", "ddd"]).block()
+        final actual = sut.filterNonFavoritedTweet(["aaa", "bbb", "ccc", "ddd"], Mock(TwitterUser)).block()
 
         then:
         actual == expected
@@ -163,6 +179,22 @@ class FavoriteServiceSpec extends Specification {
         then:
         final exception = thrown(NotFoundQualifiedTweetException)
         exception.getMessage() == "条件に合致したツイートが存在しません"
+    }
+
+    final "getTwitterUser"() {
+        given:
+        // 期待値を作成する
+        final expected = TwitterUser.builder()
+                .apiKey("apiKey")
+                .apiSecret("apiSecret")
+                .accessToken("accessToken")
+                .accessTokenSecret("accessTokenSecret")
+                .build()
+        when:
+        final actual = sut.getTwitterUser("id").block()
+
+        then:
+        actual == expected
     }
 
     final "buildQualification"() {

@@ -40,3 +40,14 @@ extension:
         api-key: apiKey
         api-secret: apiSecret
         max-in-memory-size: 16777216
+    google:
+      auth:
+        base-url: http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=FUNCTION_URL
+        connect-timeout: 10000
+        read-timeout: 10000
+        max-in-memory-size: 16777216
+      udb:
+        base-url: https://region-project-id.cloudfunctions.net/path/to/function
+        connect-timeout: 10000
+        read-timeout: 10000
+        max-in-memory-size: 16777216
