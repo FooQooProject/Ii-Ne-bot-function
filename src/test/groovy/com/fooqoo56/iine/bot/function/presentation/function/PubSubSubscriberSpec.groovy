@@ -28,7 +28,7 @@ class PubSubSubscriberSpec extends Specification {
         given:
         // 引数を生成する
         final message = PubSubMessage.builder()
-                .data("eyJ1c2VySWQiOiAiamZRRDZJNkpHd3ZkUzVReWpSbWciLCAicXVlcnkiOiAiTmV4dC5qcyIsICJyZXR3ZWV0Q291bnQiOiAwLCAiZmF2b3JpdGVDb3VudCI6IDMsICJmb2xsb3dlcnNDb3VudCI6IDEwLCAiZnJpZW5kc0NvdW50IjogMTB9Cg==\n")
+                .data("eyJ1c2VySWQiOiAiamZRRDZJNkpHd3ZkUzVReWpSbWciLCAicXVlcnkiOiAiTmV4dC5qcyIsICJyZXR3ZWV0Q291bnQiOiAwLCAiZmF2b3JpdGVDb3VudCI6IDMsICJmb2xsb3dlcnNDb3VudCI6IDEwLCAiZnJpZW5kc0NvdW50IjogMTB9Cg==")
                 .attributes(Map.of("key", "value"))
                 .messageId("id")
                 .publishTime("publishTime")

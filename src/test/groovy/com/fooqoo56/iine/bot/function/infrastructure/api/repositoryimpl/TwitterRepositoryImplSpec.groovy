@@ -1,5 +1,6 @@
 package com.fooqoo56.iine.bot.function.infrastructure.api.repositoryimpl
 
+import com.fooqoo56.iine.bot.function.domain.model.TwitterUser
 import com.fooqoo56.iine.bot.function.infrastructure.api.config.ApiSetting
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.Lang
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.ResultType
@@ -79,6 +80,14 @@ class TwitterRepositoryImplSpec extends Specification {
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .setBody(mockResponse))
 
+        // 引数を作成する
+        final twitterUser = TwitterUser.builder()
+                .apiKey("apiKey")
+                .apiSecret("apiSecret")
+                .accessToken("accessToken")
+                .accessTokenSecret("accessTokenSecret")
+                .build()
+
         // 期待値を作成する
         final expectedResults = Oauth2Response.builder()
                 .tokenType("token_type")
@@ -86,7 +95,7 @@ class TwitterRepositoryImplSpec extends Specification {
                 .build()
 
         when:
-        final actual = sut.getBearerToken().block()
+        final actual = sut.getBearerToken(twitterUser).block()
 
         then:
         actual == expectedResults
@@ -111,8 +120,16 @@ class TwitterRepositoryImplSpec extends Specification {
                 .signer(signer)
                 .build()
 
+        // 引数を作成する
+        final twitterUser = TwitterUser.builder()
+                .apiKey("apiKey")
+                .apiSecret("apiSecret")
+                .accessToken("accessToken")
+                .accessTokenSecret("accessTokenSecret")
+                .build()
+
         when:
-        final actual = sut.buildOauthAuthorizationHeaderBuilder("id")
+        final actual = sut.buildOauthAuthorizationHeaderBuilder(twitterUser, "id",)
 
         then:
         actual == expectedResults
@@ -122,7 +139,7 @@ class TwitterRepositoryImplSpec extends Specification {
         given:
         // テスト対象クラスのインスタンス作成 - メソッドのモック化
         final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer]) {
-            getBearerToken() >> Mono.just(Oauth2Response.builder()
+            getBearerToken(*_) >> Mono.just(Oauth2Response.builder()
                     .tokenType("token_type")
                     .accessToken("access_token")
                     .build())
@@ -150,8 +167,15 @@ class TwitterRepositoryImplSpec extends Specification {
                 .until(LocalDate.of(2021, 1, 1))
                 .build()
 
+        final twitterUser = TwitterUser.builder()
+                .apiKey("apiKey")
+                .apiSecret("apiSecret")
+                .accessToken("accessToken")
+                .accessTokenSecret("accessTokenSecret")
+                .build()
+
         when:
-        final actual = sut.findTweet(request).block()
+        final actual = sut.findTweet(request, twitterUser).block()
 
         then:
         actual == expectedResults
@@ -180,8 +204,15 @@ class TwitterRepositoryImplSpec extends Specification {
         // 引数を作成する
         final request = "query"
 
+        final twitterUser = TwitterUser.builder()
+                .apiKey("apiKey")
+                .apiSecret("apiSecret")
+                .accessToken("accessToken")
+                .accessTokenSecret("accessTokenSecret")
+                .build()
+
         when:
-        final actual = sut.favoriteTweet(request).block()
+        final actual = sut.favoriteTweet(request, twitterUser).block()
 
         then:
         actual == expectedResults
@@ -191,7 +222,7 @@ class TwitterRepositoryImplSpec extends Specification {
         given:
         // テスト対象クラスのインスタンス作成 - メソッドのモック化
         final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer]) {
-            getBearerToken() >> Mono.just(Oauth2Response.builder()
+            getBearerToken(*_) >> Mono.just(Oauth2Response.builder()
                     .tokenType("token_type")
                     .accessToken("access_token")
                     .build())
@@ -211,8 +242,15 @@ class TwitterRepositoryImplSpec extends Specification {
         // 引数を作成する
         final request = ["xxxxx", "yyyyy"]
 
+        final twitterUser = TwitterUser.builder()
+                .apiKey("apiKey")
+                .apiSecret("apiSecret")
+                .accessToken("accessToken")
+                .accessTokenSecret("accessTokenSecret")
+                .build()
+
         when:
-        final actual = sut.lookupTweet(request).collectList().block()
+        final actual = sut.lookupTweet(request, twitterUser).collectList().block()
 
         then:
         actual == expectedResults

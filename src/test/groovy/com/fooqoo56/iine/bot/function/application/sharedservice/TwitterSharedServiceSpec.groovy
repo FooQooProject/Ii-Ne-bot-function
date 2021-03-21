@@ -1,6 +1,7 @@
 package com.fooqoo56.iine.bot.function.application.sharedservice
 
 import com.fooqoo56.iine.bot.function.domain.model.Tweet
+import com.fooqoo56.iine.bot.function.domain.model.TwitterUser
 import com.fooqoo56.iine.bot.function.domain.model.User
 import com.fooqoo56.iine.bot.function.domain.repository.api.TwitterRepository
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest
@@ -37,7 +38,7 @@ class TwitterSharedServiceSpec extends Specification {
         twitterRepository.findTweet(*_) >> getFindTweetMock()
 
         when:
-        final actual = sut.findTweet(request).collectList().block()
+        final actual = sut.findTweet(request, Mock(TwitterUser)).collectList().block()
 
         then:
         actual == expected
@@ -94,7 +95,7 @@ class TwitterSharedServiceSpec extends Specification {
                         .build())
 
         when:
-        final actual = sut.favoriteTweet("id").block()
+        final actual = sut.favoriteTweet("id", Mock(TwitterUser)).block()
 
         then:
         actual == expected
@@ -106,7 +107,7 @@ class TwitterSharedServiceSpec extends Specification {
         twitterRepository.favoriteTweet(*_) >> Mono.error(new WebClientResponseException(500, "", null, null, null))
 
         when:
-        final actual = sut.favoriteTweet("id").block()
+        final actual = sut.favoriteTweet("id", Mock(TwitterUser)).block()
 
         then:
         actual == Optional.empty()
@@ -122,7 +123,7 @@ class TwitterSharedServiceSpec extends Specification {
         twitterRepository.lookupTweet(*_) >> getLookUpTweetMock()
 
         when:
-        final actual = sut.lookUpTweet(request).collectList().block()
+        final actual = sut.lookUpTweet(request, Mock(TwitterUser)).collectList().block()
 
         then:
         actual == expected
