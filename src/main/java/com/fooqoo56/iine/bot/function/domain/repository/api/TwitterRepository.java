@@ -19,12 +19,13 @@ public interface TwitterRepository {
      * @param request TweetRequest
      * @return TwitterFollowerResponse
      */
-    Mono<TweetListResponse> findTweet(final TweetRequest request, final TwitterUser twitterUser);
+    Mono<TweetListResponse> findTweet(final TweetRequest request);
 
     /**
      * ツイートのいいね
      *
-     * @param id ツイートID
+     * @param id          ツイートID
+     * @param twitterUser Twitterユーザ
      * @return いいねAPIのレスポンス
      */
     Mono<TweetResponse> favoriteTweet(final String id, final TwitterUser twitterUser);
@@ -35,5 +36,5 @@ public interface TwitterRepository {
      * @param ids ツイートID
      * @return 取得APIのレスポンス
      */
-    Flux<TweetResponse> lookupTweet(final List<String> ids, final TwitterUser twitterUser);
+    Flux<TweetResponse> lookupTweet(final List<String> ids);
 }
