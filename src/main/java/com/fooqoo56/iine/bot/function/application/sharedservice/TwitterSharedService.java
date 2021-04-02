@@ -36,7 +36,7 @@ public class TwitterSharedService {
      */
     @NonNull
     public Flux<Tweet> findTweet(final TweetRequest request, final TwitterUser twitterUser) {
-        return twitterRepository.findTweet(request, twitterUser)
+        return twitterRepository.findTweet(request)
                 .map(TweetListResponse::getStatuses)
                 .flatMapMany(Flux::fromIterable)
                 .map(this::buildTweet);
@@ -68,7 +68,7 @@ public class TwitterSharedService {
      */
     @NonNull
     public Flux<Tweet> lookUpTweet(final List<String> idList, final TwitterUser twitterUser) {
-        return twitterRepository.lookupTweet(idList, twitterUser)
+        return twitterRepository.lookupTweet(idList)
                 .map(this::buildTweet);
     }
 

@@ -42,6 +42,8 @@ class TwitterRepositoryImplSpec extends Specification {
         apiSetting.setConnectTimeout(Duration.ofMillis(1000))
         apiSetting.setReadTimeout(Duration.ofMillis(1000))
         apiSetting.setMaxInMemorySize(16777216)
+        apiSetting.setApikey("apiKey")
+        apiSetting.setApiSecret("apiSecret")
 
         clock = Clock.fixed(ZonedDateTime.of(
                 2021,
@@ -66,7 +68,7 @@ class TwitterRepositoryImplSpec extends Specification {
     final "getBearerToken"() {
         given:
         // テスト対象クラスのインスタンス作成
-        final sut = new TwitterRepositoryImpl(apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer)
+        final sut = new TwitterRepositoryImpl(apiSetting, apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer)
 
         // mockサーバを作成する
         final mockResponse = new FileReader("src/test/resources/oauth2.json").text
@@ -76,14 +78,6 @@ class TwitterRepositoryImplSpec extends Specification {
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .setBody(mockResponse))
 
-        // 引数を作成する
-        final twitterUser = TwitterUser.builder()
-                .apiKey("apiKey")
-                .apiSecret("apiSecret")
-                .accessToken("accessToken")
-                .accessTokenSecret("accessTokenSecret")
-                .build()
-
         // 期待値を作成する
         final expectedResults = Oauth2Response.builder()
                 .tokenType("token_type")
@@ -91,7 +85,7 @@ class TwitterRepositoryImplSpec extends Specification {
                 .build()
 
         when:
-        final actual = sut.getBearerToken(twitterUser).block()
+        final actual = sut.getBearerToken().block()
 
         then:
         actual == expectedResults
@@ -100,7 +94,7 @@ class TwitterRepositoryImplSpec extends Specification {
     final "buildOauthAuthorizationHeaderBuilder"() {
         given:
         // テスト対象クラスのインスタンス作成
-        final sut = new TwitterRepositoryImpl(apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer)
+        final sut = new TwitterRepositoryImpl(apiSetting, apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer)
 
         // 期待値を作成する
         final expectedResults = OauthAuthorizationHeaderBuilder.builder()
@@ -118,8 +112,6 @@ class TwitterRepositoryImplSpec extends Specification {
 
         // 引数を作成する
         final twitterUser = TwitterUser.builder()
-                .apiKey("apiKey")
-                .apiSecret("apiSecret")
                 .accessToken("accessToken")
                 .accessTokenSecret("accessTokenSecret")
                 .build()
@@ -134,7 +126,7 @@ class TwitterRepositoryImplSpec extends Specification {
     final "findTweet"() {
         given:
         // テスト対象クラスのインスタンス作成 - メソッドのモック化
-        final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer]) {
+        final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer]) {
             getBearerToken(*_) >> Mono.just(Oauth2Response.builder()
                     .tokenType("token_type")
                     .accessToken("access_token")
@@ -163,15 +155,8 @@ class TwitterRepositoryImplSpec extends Specification {
                 .until(LocalDate.of(2021, 1, 1))
                 .build()
 
-        final twitterUser = TwitterUser.builder()
-                .apiKey("apiKey")
-                .apiSecret("apiSecret")
-                .accessToken("accessToken")
-                .accessTokenSecret("accessTokenSecret")
-                .build()
-
         when:
-        final actual = sut.findTweet(request, twitterUser).block()
+        final actual = sut.findTweet(request).block()
 
         then:
         actual == expectedResults
@@ -180,7 +165,7 @@ class TwitterRepositoryImplSpec extends Specification {
     final "favoriteTweet"() {
         given:
         // テスト対象クラスのインスタンス作成 - メソッドのモック化
-        final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer]) {
+        final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer]) {
             buildOauthAuthorizationHeaderBuilder() >> Mock(OauthAuthorizationHeaderBuilder) {
                 getOauthHeader() >> "oauth2header"
             }
@@ -201,8 +186,6 @@ class TwitterRepositoryImplSpec extends Specification {
         final request = "query"
 
         final twitterUser = TwitterUser.builder()
-                .apiKey("apiKey")
-                .apiSecret("apiSecret")
                 .accessToken("accessToken")
                 .accessTokenSecret("accessTokenSecret")
                 .build()
@@ -217,7 +200,7 @@ class TwitterRepositoryImplSpec extends Specification {
     final "lookupTweet"() {
         given:
         // テスト対象クラスのインスタンス作成 - メソッドのモック化
-        final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer]) {
+        final sut = (TwitterRepositoryImpl) Spy(TwitterRepositoryImpl, constructorArgs: [apiSetting, apiSetting, webClient, webClient, webClient, webClient, clock, secureRandom, signer]) {
             getBearerToken(*_) >> Mono.just(Oauth2Response.builder()
                     .tokenType("token_type")
                     .accessToken("access_token")
@@ -238,15 +221,8 @@ class TwitterRepositoryImplSpec extends Specification {
         // 引数を作成する
         final request = ["xxxxx", "yyyyy"]
 
-        final twitterUser = TwitterUser.builder()
-                .apiKey("apiKey")
-                .apiSecret("apiSecret")
-                .accessToken("accessToken")
-                .accessTokenSecret("accessTokenSecret")
-                .build()
-
         when:
-        final actual = sut.lookupTweet(request, twitterUser).collectList().block()
+        final actual = sut.lookupTweet(request).collectList().block()
 
         then:
         actual == expectedResults

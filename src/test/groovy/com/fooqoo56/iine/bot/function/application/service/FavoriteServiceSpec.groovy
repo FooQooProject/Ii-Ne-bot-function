@@ -45,8 +45,6 @@ class FavoriteServiceSpec extends Specification {
             getTwitterUser(*_) >> Mono.just(UdbResponse.builder()
                     .user(UdbResponse.TwitterUserResponse.builder()
                             .userId("userId")
-                            .apiKey("apiKey")
-                            .apiSecret("apiSecret")
                             .accessToken("accessToken")
                             .accessTokenSecret("accessTokenSecret")
                             .build())
@@ -185,8 +183,6 @@ class FavoriteServiceSpec extends Specification {
         given:
         // 期待値を作成する
         final expected = TwitterUser.builder()
-                .apiKey("apiKey")
-                .apiSecret("apiSecret")
                 .accessToken("accessToken")
                 .accessTokenSecret("accessTokenSecret")
                 .build()

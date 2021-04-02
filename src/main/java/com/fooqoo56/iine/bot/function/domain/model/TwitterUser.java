@@ -18,12 +18,6 @@ public class TwitterUser implements Serializable {
     private static final long serialVersionUID = 6298021157481576949L;
 
     @NonNull
-    private final String apiKey;
-
-    @NonNull
-    private final String apiSecret;
-
-    @NonNull
     private final String accessToken;
 
     @NonNull

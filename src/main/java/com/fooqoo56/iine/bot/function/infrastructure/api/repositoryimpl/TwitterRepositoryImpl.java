@@ -37,6 +37,7 @@ public class TwitterRepositoryImpl implements TwitterRepository {
     private static final String ID_PARAM = "id";
 
     private final ApiSetting twitterFavoriteApiSetting;
+    private final ApiSetting twitterOauthApiSetting;
 
     private final WebClient twitterSearchClient;
     private final WebClient twitterFavoriteClient;
@@ -51,9 +52,8 @@ public class TwitterRepositoryImpl implements TwitterRepository {
      */
     @Override
     @NonNull
-    public Mono<TweetListResponse> findTweet(final TweetRequest request,
-                                             final TwitterUser twitterUser) {
-        return getBearerToken(twitterUser)
+    public Mono<TweetListResponse> findTweet(final TweetRequest request) {
+        return getBearerToken()
                 .map(Oauth2Response::getAccessToken)
                 .flatMap(
                         accessToken -> twitterSearchClient
@@ -87,8 +87,8 @@ public class TwitterRepositoryImpl implements TwitterRepository {
      */
     @Override
     @NonNull
-    public Flux<TweetResponse> lookupTweet(final List<String> ids, final TwitterUser twitterUser) {
-        return getBearerToken(twitterUser)
+    public Flux<TweetResponse> lookupTweet(final List<String> ids) {
+        return getBearerToken()
                 .map(Oauth2Response::getAccessToken)
                 .flatMapMany(
                         accessToken -> twitterLookupClient
@@ -108,14 +108,15 @@ public class TwitterRepositoryImpl implements TwitterRepository {
      * @return Oauth2Response
      */
     @NonNull
-    protected Mono<Oauth2Response> getBearerToken(final TwitterUser twitterUser) {
+    protected Mono<Oauth2Response> getBearerToken() {
         final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "client_credentials");
 
         return bearerTokenTwitterClient
                 .post()
                 .headers(httpHeaders -> httpHeaders
-                        .setBasicAuth(twitterUser.getApiKey(), twitterUser.getApiSecret()))
+                        .setBasicAuth(twitterOauthApiSetting.getApikey(),
+                                twitterOauthApiSetting.getApiSecret()))
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(Oauth2Response.class);
@@ -134,10 +135,10 @@ public class TwitterRepositoryImpl implements TwitterRepository {
                 .builder()
                 .method(HttpMethod.POST.name().toUpperCase())
                 .url(twitterFavoriteApiSetting.getBaseUrl())
-                .consumerSecret(twitterUser.getApiSecret())
+                .consumerSecret(twitterFavoriteApiSetting.getApiSecret())
                 .tokenSecret(twitterUser.getAccessTokenSecret())
                 .accessToken(twitterUser.getAccessToken())
-                .consumerKey(twitterUser.getApiKey())
+                .consumerKey(twitterFavoriteApiSetting.getApikey())
                 .queryParameters(Map.of(ID_PARAM, id))
                 .instant(Instant.now(clock))
                 .secureRandom(secureRandom)
