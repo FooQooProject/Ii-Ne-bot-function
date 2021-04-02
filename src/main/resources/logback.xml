@@ -3,6 +3,7 @@
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %replace(%msg){'\n','\\\\n'}\t%n</pattern>
         </encoder>
+        <charset>UTF-8</charset>
     </appender>
 
     <logger name="chapters.configuration" level="INFO"/>
