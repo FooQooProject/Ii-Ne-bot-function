@@ -41,12 +41,6 @@ public class UdbResponse implements Serializable {
         @JsonProperty("userId")
         private String userId;
 
-        @JsonProperty("apiKey")
-        private String apiKey;
-
-        @JsonProperty("apiSecret")
-        private String apiSecret;
-
         @JsonProperty("accessToken")
         private String accessToken;
 

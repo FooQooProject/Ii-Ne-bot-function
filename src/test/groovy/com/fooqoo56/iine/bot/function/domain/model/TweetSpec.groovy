@@ -6,7 +6,7 @@ import spock.lang.Unroll
 class TweetSpec extends Specification {
 
     @Unroll
-    final "isNotFavorite"() {
+    final "isNotFavorite - #caseName"() {
         given:
         final sut = Tweet.builder()
                 .id("id")

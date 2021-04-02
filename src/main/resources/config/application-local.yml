@@ -7,21 +7,29 @@ extension:
         connect-timeout: 10000
         read-timeout: 10000
         max-in-memory-size: 16777216
+        api-key: ${API_KEY}
+        api-secret: ${API_SECRET}
       search:
         base-url: https://api.twitter.com/1.1/search/tweets.json
         connect-timeout: 10000
         read-timeout: 10000
         max-in-memory-size: 16777216
+        api-key: ${API_KEY}
+        api-secret: ${API_SECRET}
       favorite:
         base-url: https://api.twitter.com/1.1/favorites/create.json
         connect-timeout: 10000
         read-timeout: 10000
         max-in-memory-size: 16777216
+        api-key: ${API_KEY}
+        api-secret: ${API_SECRET}
       lookup:
         base-url: https://api.twitter.com/1.1/statuses/lookup.json
         connect-timeout: 10000
         read-timeout: 10000
         max-in-memory-size: 16777216
+        api-key: ${API_KEY}
+        api-secret: ${API_SECRET}
     google:
       auth:
         base-url: http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=FUNCTION_URL
@@ -29,7 +37,7 @@ extension:
         read-timeout: 10000
         max-in-memory-size: 16777216
       udb:
-        base-url: https://us-central1-ii-ne-bot.cloudfunctions.net/api-staging/v1/user/
+        base-url: https://us-central1-ii-ne-bot-staging.cloudfunctions.net/api/v1/user/
         connect-timeout: 10000
         read-timeout: 10000
         max-in-memory-size: 16777216

@@ -31,4 +31,14 @@ public class ApiSetting implements Serializable {
      * 最大メモリサイズ
      */
     private Integer maxInMemorySize;
+
+    /**
+     * API Key
+     */
+    private String apikey;
+
+    /**
+     * API Secret
+     */
+    private String apiSecret;
 }

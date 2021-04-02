@@ -1,6 +1,6 @@
 package com.fooqoo56.iine.bot.function.infrastructure.api.repositoryimpl
 
-import com.fooqoo56.iine.bot.function.domain.model.TwitterUser
+
 import com.fooqoo56.iine.bot.function.infrastructure.api.config.ApiSetting
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.UdbResponse
 import com.google.api.client.auth.oauth.OAuthHmacSigner
@@ -51,14 +51,6 @@ class FireStoreRepositoryImplSpec extends Specification {
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN)
                         .setBody(mockResponse))
 
-        // 引数を作成する
-        final twitterUser = TwitterUser.builder()
-                .apiKey("apiKey")
-                .apiSecret("apiSecret")
-                .accessToken("accessToken")
-                .accessTokenSecret("accessTokenSecret")
-                .build()
-
         // 期待値を作成する
         final expectedResults = "BEARER_TOKEN"
 
@@ -88,8 +80,6 @@ class FireStoreRepositoryImplSpec extends Specification {
         final expectedResults = UdbResponse.builder()
                 .user(UdbResponse.TwitterUserResponse.builder()
                         .userId("userId")
-                        .apiKey("apiKey")
-                        .apiSecret("apiSecret")
                         .accessToken("accessToken")
                         .accessTokenSecret("accessTokenSecret")
                         .build())

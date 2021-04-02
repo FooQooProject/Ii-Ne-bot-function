@@ -105,8 +105,6 @@ public class FavoriteService {
     private Mono<TwitterUser> getTwitterUser(final String id) {
         return fireStoreRepository.getTwitterUser(id)
                 .map(udbResponse -> TwitterUser.builder()
-                        .apiKey(udbResponse.getUser().getApiKey())
-                        .apiSecret(udbResponse.getUser().getApiSecret())
                         .accessToken(udbResponse.getUser().getAccessToken())
                         .accessTokenSecret(udbResponse.getUser().getAccessTokenSecret())
                         .build());

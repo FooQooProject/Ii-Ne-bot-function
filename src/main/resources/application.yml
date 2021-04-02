@@ -1,7 +1,7 @@
 spring:
   profiles:
     active: default
-    include: prod
+    include: local
   batch:
     initialize-schema: never
     job:
