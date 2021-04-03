@@ -69,7 +69,6 @@ public class FavoriteService {
                         // いいね要件に合致したツイートのみフィルタリングする
                         .filter(tweet -> isQualifiedTweet(tweet, qualification))
                         .collectList()
-                        .log("collectList")
                         // いいね数の降順ソート実施する
                         .map(this::sortTweetOrderByFavoritesCountDesc)
                         // ソート後のリストの先頭を取得する
@@ -78,7 +77,8 @@ public class FavoriteService {
                         .flatMap(ids -> this.filterNonFavoritedTweet(ids, twitterUser))
                         // 条件にあったツイートの件数をログ出力
                         .doOnNext(idList -> log
-                                .info("要件と合致したツイートの件数: {}/{}", idList.size(), NUM_OF_TOP_TWEET))
+                                .info("Number of tweets that match the requirements: {}/{}",
+                                        idList.size(), NUM_OF_TOP_TWEET))
                         // 先頭一件を取得する
                         .map(this::getTopId)
                         // ツイートのいいねを実行する
