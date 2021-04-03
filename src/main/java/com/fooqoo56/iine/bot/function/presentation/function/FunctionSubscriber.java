@@ -54,12 +54,13 @@ public class FunctionSubscriber {
 
         // NullCheck or いいねが失敗した場合、例外を発生させる
         if (Objects.isNull(tweetOptional) || tweetOptional.isEmpty()) {
-            log.error("ツイートをいいねできませんでした: " + tweetQualification);
+            log.error("Failed liking the tweet. messageId: {}", message.getMessageId());
             return Boolean.FALSE;
         }
 
         // ツイートがnon nullの場合、ログ出力する
-        tweetOptional.ifPresent(tweet -> log.info("ツイートをいいねしました: " + tweet));
+        tweetOptional.ifPresent(
+                tweet -> log.info("Finished liking the tweet. tweetId: {}", tweet.getId()));
 
         return Boolean.TRUE;
     }

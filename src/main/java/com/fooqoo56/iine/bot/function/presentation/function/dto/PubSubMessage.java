@@ -50,7 +50,6 @@ public class PubSubMessage implements Serializable {
      */
     @NonNull
     public String getLog() {
-        return String.format("メッセージID: %s, attributes: %s, publishTime: %s, data: %s", messageId,
-                attributes, publishTime, data);
+        return String.format("messageID: %s", messageId);
     }
 }
