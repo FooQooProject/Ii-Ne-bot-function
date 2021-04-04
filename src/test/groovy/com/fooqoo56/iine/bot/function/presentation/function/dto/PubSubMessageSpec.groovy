@@ -13,7 +13,7 @@ class PubSubMessageSpec extends Specification {
                 .attributes(Map.of("key", "value"))
                 .build()
 
-        final expect = "メッセージID: messageId, attributes: {key=value}, publishTime: publishTime, data: data"
+        final expect = "messageID: messageId"
 
         expect:
         sut.getLog() == expect

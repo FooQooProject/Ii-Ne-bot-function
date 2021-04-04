@@ -1,13 +1,6 @@
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %replace(%msg){'\n','\\\\n'}\t%n</pattern>
-        </encoder>
-    </appender>
-
-    <logger name="chapters.configuration" level="INFO"/>
-
-    <root level="debug">
-        <appender-ref ref="STDOUT"/>
+    <include resource="org/springframework/cloud/gcp/autoconfigure/logging/logback-json-appender.xml"/>
+    <root level="INFO">
+        <appender-ref ref="CONSOLE_JSON"/>
     </root>
 </configuration>

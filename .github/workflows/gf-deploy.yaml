@@ -48,6 +48,7 @@ jobs:
             --trigger-topic=favorite \
             --env-vars-file=env.yaml \
             --runtime=java11 \
+            --region asia-northeast1 \
             --source=build/libs \
             --memory=1024MB \
             --timeout=300
