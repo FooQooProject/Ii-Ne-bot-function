@@ -1,0 +1,38 @@
+on:
+  pull_request:
+    branches:
+      - main
+    types: [ closed ]
+
+env:
+  GREN_GITHUB_TOKEN: ${{ secrets.GREN_GITHUB_TOKEN }}
+
+jobs:
+  merge:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: pull-request merged
+        run: |
+          export RELEASE_TAG=`./gradlew properties -q | grep "version:" | awk '{print $2}'`
+          echo "RELEASE_TAG=v${RELEASE_TAG}" >> $GITHUB_ENV
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          release_name: ${{ env.RELEASE_TAG }}
+          body: "${{github.event.pull_request.body}}"
+          draft: false
+          prerelease: false
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+      - name: Update Release Note
+        run: |
+          npm install github-release-notes -g
+          gren release --override
