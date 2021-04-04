@@ -1,0 +1,10 @@
+---
+dataSource: "prs"
+prefix: ""
+ignoreLabels:
+    - "bug"
+    - "documentation"
+    - "enhancement"
+onlyMilestones: false
+groupBy: false
+changelogFilename: "CHANGELOG.md"
