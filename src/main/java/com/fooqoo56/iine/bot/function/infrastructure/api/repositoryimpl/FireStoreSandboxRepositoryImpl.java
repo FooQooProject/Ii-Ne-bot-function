@@ -19,12 +19,13 @@ public class FireStoreSandboxRepositoryImpl implements FireStoreRepository {
      * {@inheritDoc}
      */
     @Override
-    public Mono<UdbResponse> getTwitterUser(final String id) {
+    public Mono<UdbResponse> getTwitterUser(final String userId, final String tweetId) {
         return udbClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path("{id}")
-                        .build(id))
+                        .queryParam("tweetId", tweetId)
+                        .build(userId))
                 .retrieve()
                 .bodyToMono(UdbResponse.class);
 

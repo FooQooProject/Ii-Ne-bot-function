@@ -23,13 +23,14 @@ public class FireStoreRepositoryImpl implements FireStoreRepository {
      * {@inheritDoc}
      */
     @Override
-    public Mono<UdbResponse> getTwitterUser(final String id) {
+    public Mono<UdbResponse> getTwitterUser(final String userId, final String tweetId) {
         return getBearerToken()
                 .flatMap(token -> udbClient
                         .get()
                         .uri(uriBuilder -> uriBuilder
                                 .path("{id}")
-                                .build(id))
+                                .queryParam("tweetId", tweetId)
+                                .build(userId))
                         .header(HttpHeaders.AUTHORIZATION,
                                 BEARER_PREFIX + token)
                         .retrieve()

@@ -11,8 +11,9 @@ public interface FireStoreRepository {
     /**
      * ツイッターユーザを取得する
      *
-     * @param id ID
+     * @param userId  ユーザID
+     * @param tweetId ツイートID
      * @return UdbResponse
      */
-    Mono<UdbResponse> getTwitterUser(final String id);
+    Mono<UdbResponse> getTwitterUser(final String userId, final String tweetId);
 }

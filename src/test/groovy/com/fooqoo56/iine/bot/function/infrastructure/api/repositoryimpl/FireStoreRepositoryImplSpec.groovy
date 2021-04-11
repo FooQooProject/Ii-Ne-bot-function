@@ -1,9 +1,7 @@
 package com.fooqoo56.iine.bot.function.infrastructure.api.repositoryimpl
 
 
-import com.fooqoo56.iine.bot.function.infrastructure.api.config.ApiSetting
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.UdbResponse
-import com.google.api.client.auth.oauth.OAuthHmacSigner
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.springframework.http.HttpHeaders
@@ -13,9 +11,6 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 
-import java.security.SecureRandom
-import java.time.Clock
-
 /**
  * TwitterRepositoryのテスト
  */
@@ -23,10 +18,6 @@ class FireStoreRepositoryImplSpec extends Specification {
 
     private MockWebServer mockWebServer
     private WebClient webClient
-    private ApiSetting apiSetting
-    private Clock clock
-    private SecureRandom secureRandom
-    private OAuthHmacSigner signer
 
     final setup() {
         mockWebServer = new MockWebServer()
@@ -78,15 +69,21 @@ class FireStoreRepositoryImplSpec extends Specification {
 
         // 期待値を作成する
         final expectedResults = UdbResponse.builder()
-                .user(UdbResponse.TwitterUserResponse.builder()
-                        .userId("userId")
-                        .accessToken("accessToken")
-                        .accessTokenSecret("accessTokenSecret")
-                        .build())
+                .oauth(
+                        UdbResponse.OauthUserResponse.builder()
+                                .oauthTimestamp("1618066055")
+                                .oauthSignatureMethod("HMAC-SHA1")
+                                .oauthVersion("1.0")
+                                .oauthNonce("da39a3ee5e6b4b0d3255bfef95601890afd80709")
+                                .oauthConsumerKey("consumerKey")
+                                .oauthToken("accessToken")
+                                .oauthSignature("signature")
+                                .build()
+                )
                 .build()
 
         when:
-        final actual = sut.getTwitterUser("id").block()
+        final actual = sut.getTwitterUser("userId", "tweetId").block()
 
         then:
         actual == expectedResults
