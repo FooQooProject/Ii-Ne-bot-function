@@ -65,7 +65,8 @@ public class UdbResponse implements Serializable {
         @NonNull
         public String getOauthTimestampWithNullCheck() {
             return Objects
-                    .requireNonNull(oauthTimestamp, "フィールドがnullです: UdbResponse.oauthTimestamp");
+                    .requireNonNull(oauthTimestamp,
+                            "フィールドがnullです: OauthUserResponse.oauthTimestamp");
         }
 
         /**
@@ -76,7 +77,7 @@ public class UdbResponse implements Serializable {
         @NonNull
         public String getOauthSignatureMethodWithNullCheck() {
             return Objects.requireNonNull(oauthSignatureMethod,
-                    "フィールドがnullです: UdbResponse.oauthSignatureMethod");
+                    "フィールドがnullです: OauthUserResponse.oauthSignatureMethod");
         }
 
         /**
@@ -86,7 +87,8 @@ public class UdbResponse implements Serializable {
          */
         @NonNull
         public String getOauthVersionWithNullCheck() {
-            return Objects.requireNonNull(oauthVersion, "フィールドがnullです: UdbResponse.oauthVersion");
+            return Objects
+                    .requireNonNull(oauthVersion, "フィールドがnullです: OauthUserResponse.oauthVersion");
         }
 
         /**
@@ -96,7 +98,7 @@ public class UdbResponse implements Serializable {
          */
         @NonNull
         public String getOauthNonceWithNullCheck() {
-            return Objects.requireNonNull(oauthNonce, "フィールドがnullです: UdbResponse.oauthNonce");
+            return Objects.requireNonNull(oauthNonce, "フィールドがnullです: OauthUserResponse.oauthNonce");
         }
 
         /**
@@ -107,7 +109,8 @@ public class UdbResponse implements Serializable {
         @NonNull
         public String getOauthConsumerKeyWithNullCheck() {
             return Objects
-                    .requireNonNull(oauthConsumerKey, "フィールドがnullです: UdbResponse.oauthConsumerKey");
+                    .requireNonNull(oauthConsumerKey,
+                            "フィールドがnullです: OauthUserResponse.oauthConsumerKey");
         }
 
         /**
@@ -117,7 +120,7 @@ public class UdbResponse implements Serializable {
          */
         @NonNull
         public String getOauthTokenWithNullCheck() {
-            return Objects.requireNonNull(oauthToken, "フィールドがnullです: UdbResponse.oauthToken");
+            return Objects.requireNonNull(oauthToken, "フィールドがnullです: OauthUserResponse.oauthToken");
         }
 
         /**
@@ -128,7 +131,8 @@ public class UdbResponse implements Serializable {
         @NonNull
         public String getOauthSignatureWithNullCheck() {
             return Objects
-                    .requireNonNull(oauthSignature, "フィールドがnullです: UdbResponse.oauthSignature");
+                    .requireNonNull(oauthSignature,
+                            "フィールドがnullです: OauthUserResponse.oauthSignature");
         }
     }
 }

@@ -96,6 +96,7 @@ public class TwitterSharedService {
      * @param udbResponse udbのAPIレスポンス
      * @return 認証ドメイン
      */
+    @NonNull
     private Oauth buildUserOauth(final UdbResponse udbResponse) {
         final UdbResponse.OauthUserResponse oauthUserResponse = udbResponse.getOauthWithNullCheck();
 

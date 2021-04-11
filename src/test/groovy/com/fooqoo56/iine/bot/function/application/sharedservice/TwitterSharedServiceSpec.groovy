@@ -1,5 +1,6 @@
 package com.fooqoo56.iine.bot.function.application.sharedservice
 
+import com.fooqoo56.iine.bot.function.domain.model.Oauth
 import com.fooqoo56.iine.bot.function.domain.model.Tweet
 import com.fooqoo56.iine.bot.function.domain.model.User
 import com.fooqoo56.iine.bot.function.domain.repository.api.FireStoreRepository
@@ -32,7 +33,7 @@ class TwitterSharedServiceSpec extends Specification {
                                             .oauthSignatureMethod("HMAC-SHA1")
                                             .oauthVersion("1.0")
                                             .oauthNonce("oauthNonce")
-                                            .oauthConsumerKey("cosumerKey")
+                                            .oauthConsumerKey("consumerKey")
                                             .oauthToken("accessToken")
                                             .oauthSignature("signature")
                                             .build()
@@ -143,6 +144,58 @@ class TwitterSharedServiceSpec extends Specification {
         then:
         actual == expected
     }
+
+    final "getTwitterOauth"() {
+        given:
+        final expected = Oauth.builder()
+                .oauthTimestamp("12345")
+                .oauthSignatureMethod("HMAC-SHA1")
+                .oauthVersion("1.0")
+                .oauthNonce("oauthNonce")
+                .oauthConsumerKey("consumerKey")
+                .oauthToken("accessToken")
+                .oauthSignature("signature")
+                .build()
+
+        when:
+        final actual = sut.getTwitterOauth("userId", "tweetId").block()
+
+        then:
+        actual == expected
+    }
+
+    final "buildUserOauth"() {
+        given:
+        final udbResponse = UdbResponse.builder()
+                .oauth(
+                        UdbResponse.OauthUserResponse.builder()
+                                .oauthTimestamp("12345")
+                                .oauthSignatureMethod("HMAC-SHA1")
+                                .oauthVersion("1.0")
+                                .oauthNonce("oauthNonce")
+                                .oauthConsumerKey("consumerKey")
+                                .oauthToken("accessToken")
+                                .oauthSignature("signature")
+                                .build()
+                )
+                .build()
+        final expected = Oauth.builder()
+                .oauthTimestamp("12345")
+                .oauthSignatureMethod("HMAC-SHA1")
+                .oauthVersion("1.0")
+                .oauthNonce("oauthNonce")
+                .oauthConsumerKey("consumerKey")
+                .oauthToken("accessToken")
+                .oauthSignature("signature")
+                .build()
+
+        when:
+        final actual = sut.buildUserOauth(udbResponse)
+
+        then:
+        actual == expected
+    }
+
 
     @Unroll
     final "buildTweet - #caseName"() {

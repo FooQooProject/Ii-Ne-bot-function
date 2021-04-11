@@ -11,12 +11,12 @@ class OauthSpec extends Specification {
                 .oauthSignatureMethod("HMAC-SHA1")
                 .oauthVersion("1.0")
                 .oauthNonce("oauthNonce")
-                .oauthConsumerKey("cosumerKey")
+                .oauthConsumerKey("consumerKey")
                 .oauthToken("accessToken")
                 .oauthSignature("signature")
                 .build()
 
-        final expect = "OAuth id=\"id\", oauth_timestamp=\"12345\", oauth_signature_method=\"HMAC-SHA1\", oauth_version=\"1.0\", oauth_nonce=\"oauthNonce\", oauth_consumer_key=\"cosumerKey\", oauth_token=\"accessToken\", oauth_signature=\"signature\""
+        final expect = "OAuth id=\"id\", oauth_timestamp=\"12345\", oauth_signature_method=\"HMAC-SHA1\", oauth_version=\"1.0\", oauth_nonce=\"oauthNonce\", oauth_consumer_key=\"consumerKey\", oauth_token=\"accessToken\", oauth_signature=\"signature\""
 
         expect:
         sut.getOauthAuthorizationHeader("id") == expect
@@ -29,7 +29,7 @@ class OauthSpec extends Specification {
                 .oauthSignatureMethod("HMAC-SHA1")
                 .oauthVersion("1.0")
                 .oauthNonce("oauthNonce")
-                .oauthConsumerKey("cosumerKey")
+                .oauthConsumerKey("consumerKey")
                 .oauthToken("accessToken")
                 .oauthSignature("signature")
                 .build()
@@ -47,7 +47,7 @@ class OauthSpec extends Specification {
                 .oauthSignatureMethod("HMAC-SHA1")
                 .oauthVersion("1.0")
                 .oauthNonce("oauthNonce")
-                .oauthConsumerKey("cosumerKey")
+                .oauthConsumerKey("consumerKey")
                 .oauthToken("accessToken")
                 .oauthSignature("signature")
                 .build()
