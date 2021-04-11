@@ -21,7 +21,7 @@ plugins {
 apply plugin: 'com.github.johnrengelman.shadow'
 
 group = 'com.fooqoo56.iine.bot.function'
-version = '1.6.0'
+version = '1.6.1'
 sourceCompatibility = '11.0'
 targetCompatibility = '11.0'
 
