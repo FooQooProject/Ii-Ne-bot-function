@@ -37,7 +37,7 @@ extension:
         read-timeout: 10000
         max-in-memory-size: 16777216
       udb:
-        base-url: https://us-central1-ii-ne-bot.cloudfunctions.net/api/v1/user/
+        base-url: https://us-central1-ii-ne-bot.cloudfunctions.net/api/v1/oauth/favorite/
         connect-timeout: 10000
         read-timeout: 10000
         max-in-memory-size: 16777216
