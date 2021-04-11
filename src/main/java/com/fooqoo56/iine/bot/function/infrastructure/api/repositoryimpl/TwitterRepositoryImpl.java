@@ -64,7 +64,6 @@ public class TwitterRepositoryImpl implements TwitterRepository {
     @NonNull
     public Mono<TweetResponse> favoriteTweet(final String id, final Oauth userOauth)
             throws NotSuccessGetOauthHmacSignerException {
-        System.out.println(userOauth.getOauthAuthorizationHeader(id));
         return twitterFavoriteClient
                 .post()
                 .uri(uriBuilder -> uriBuilder.queryParam(ID_PARAM, id).build())
