@@ -1,6 +1,6 @@
 package com.fooqoo56.iine.bot.function.infrastructure.api.repositoryimpl;
 
-import com.fooqoo56.iine.bot.function.domain.model.UserOauth;
+import com.fooqoo56.iine.bot.function.domain.model.Oauth;
 import com.fooqoo56.iine.bot.function.domain.repository.api.TwitterRepository;
 import com.fooqoo56.iine.bot.function.exception.NotSuccessGetOauthHmacSignerException;
 import com.fooqoo56.iine.bot.function.infrastructure.api.config.ApiSetting;
@@ -62,7 +62,7 @@ public class TwitterRepositoryImpl implements TwitterRepository {
      */
     @Override
     @NonNull
-    public Mono<TweetResponse> favoriteTweet(final String id, final UserOauth userOauth)
+    public Mono<TweetResponse> favoriteTweet(final String id, final Oauth userOauth)
             throws NotSuccessGetOauthHmacSignerException {
         System.out.println(userOauth.getOauthAuthorizationHeader(id));
         return twitterFavoriteClient

@@ -1,6 +1,7 @@
 package com.fooqoo56.iine.bot.function.infrastructure.api.repositoryimpl
 
-import com.fooqoo56.iine.bot.function.domain.model.UserOauth
+
+import com.fooqoo56.iine.bot.function.domain.model.Oauth
 import com.fooqoo56.iine.bot.function.infrastructure.api.config.ApiSetting
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.Lang
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.constant.ResultType
@@ -148,7 +149,7 @@ class TwitterRepositoryImplSpec extends Specification {
         // 引数を作成する
         final request = "query"
 
-        final twitterUser = Mock(UserOauth) {
+        final twitterUser = Mock(Oauth) {
             getOauthAuthorizationHeader(*_) >> "oauth header"
         }
 

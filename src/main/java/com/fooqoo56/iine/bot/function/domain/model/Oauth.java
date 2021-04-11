@@ -12,12 +12,13 @@ import lombok.ToString;
 import org.springframework.lang.NonNull;
 import org.springframework.web.util.UriUtils;
 
+
 @Getter
 @ToString
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @Builder
-public class UserOauth implements Serializable {
+public class Oauth implements Serializable {
 
     private static final long serialVersionUID = 6298021157481576949L;
 
@@ -62,14 +63,14 @@ public class UserOauth implements Serializable {
     @NonNull
     public String getOauthAuthorizationHeader(final String id) {
         return String.format("OAuth %s, %s, %s, %s, %s, %s, %s, %s",
-                getOauthKV("id", id),
-                getOauthKV("oauth_timestamp", oauthTimestamp),
-                getOauthKV("oauth_signature_method", oauthSignatureMethod),
-                getOauthKV("oauth_version", oauthVersion),
-                getOauthKV("oauth_nonce", oauthNonce),
-                getOauthKV("oauth_consumer_key", oauthConsumerKey),
-                getOauthKV("oauth_token", oauthToken),
-                getOauthKV("oauth_signature", oauthSignature));
+                getOauthKeyValue("id", id),
+                getOauthKeyValue("oauth_timestamp", oauthTimestamp),
+                getOauthKeyValue("oauth_signature_method", oauthSignatureMethod),
+                getOauthKeyValue("oauth_version", oauthVersion),
+                getOauthKeyValue("oauth_nonce", oauthNonce),
+                getOauthKeyValue("oauth_consumer_key", oauthConsumerKey),
+                getOauthKeyValue("oauth_token", oauthToken),
+                getOauthKeyValue("oauth_signature", oauthSignature));
     }
 
     /**
@@ -80,7 +81,7 @@ public class UserOauth implements Serializable {
      * @return Oauthパラメータ(KeyValue形式)
      */
     @NonNull
-    private String getOauthKV(final String key, final String value) {
+    private String getOauthKeyValue(final String key, final String value) {
         return String.format("%s=\"%s\"", encodeUriComponent(key), encodeUriComponent(value));
     }
 }

@@ -1,8 +1,8 @@
 package com.fooqoo56.iine.bot.function.application.sharedservice;
 
+import com.fooqoo56.iine.bot.function.domain.model.Oauth;
 import com.fooqoo56.iine.bot.function.domain.model.Tweet;
 import com.fooqoo56.iine.bot.function.domain.model.User;
-import com.fooqoo56.iine.bot.function.domain.model.UserOauth;
 import com.fooqoo56.iine.bot.function.domain.repository.api.FireStoreRepository;
 import com.fooqoo56.iine.bot.function.domain.repository.api.TwitterRepository;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest;
@@ -85,7 +85,7 @@ public class TwitterSharedService {
      * @return ツイッターユーザ
      */
     @NonNull
-    private Mono<UserOauth> getTwitterOauth(final String userId, final String tweetId) {
+    private Mono<Oauth> getTwitterOauth(final String userId, final String tweetId) {
         return fireStoreRepository.getTwitterUser(userId, tweetId)
                 .map(this::buildUserOauth);
     }
@@ -96,10 +96,10 @@ public class TwitterSharedService {
      * @param udbResponse udbのAPIレスポンス
      * @return 認証ドメイン
      */
-    private UserOauth buildUserOauth(final UdbResponse udbResponse) {
+    private Oauth buildUserOauth(final UdbResponse udbResponse) {
         final UdbResponse.OauthUserResponse oauthUserResponse = udbResponse.getOauthWithNullCheck();
 
-        return UserOauth.builder()
+        return Oauth.builder()
                 .oauthTimestamp(oauthUserResponse.getOauthTimestampWithNullCheck())
                 .oauthSignatureMethod(oauthUserResponse.getOauthSignatureMethodWithNullCheck())
                 .oauthVersion(oauthUserResponse.getOauthVersionWithNullCheck())

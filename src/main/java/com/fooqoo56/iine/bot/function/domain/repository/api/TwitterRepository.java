@@ -1,6 +1,6 @@
 package com.fooqoo56.iine.bot.function.domain.repository.api;
 
-import com.fooqoo56.iine.bot.function.domain.model.UserOauth;
+import com.fooqoo56.iine.bot.function.domain.model.Oauth;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.TweetListResponse;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.TweetResponse;
@@ -28,7 +28,7 @@ public interface TwitterRepository {
      * @param userOauth Twitterユーザ
      * @return いいねAPIのレスポンス
      */
-    Mono<TweetResponse> favoriteTweet(final String id, final UserOauth userOauth);
+    Mono<TweetResponse> favoriteTweet(final String id, final Oauth userOauth);
 
     /**
      * ID指定のツイート取得
