@@ -1,12 +1,14 @@
 package com.fooqoo56.iine.bot.function.application.sharedservice;
 
 import com.fooqoo56.iine.bot.function.domain.model.Tweet;
-import com.fooqoo56.iine.bot.function.domain.model.TwitterUser;
 import com.fooqoo56.iine.bot.function.domain.model.User;
+import com.fooqoo56.iine.bot.function.domain.model.UserOauth;
+import com.fooqoo56.iine.bot.function.domain.repository.api.FireStoreRepository;
 import com.fooqoo56.iine.bot.function.domain.repository.api.TwitterRepository;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.TweetListResponse;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.TweetResponse;
+import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.UdbResponse;
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.UserResponse;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,7 @@ import reactor.core.publisher.Mono;
 public class TwitterSharedService {
 
     private final TwitterRepository twitterRepository;
+    private final FireStoreRepository fireStoreRepository;
 
     /**
      * ツイートを検索する
@@ -35,7 +38,7 @@ public class TwitterSharedService {
      * @return TweetのFlux
      */
     @NonNull
-    public Flux<Tweet> findTweet(final TweetRequest request, final TwitterUser twitterUser) {
+    public Flux<Tweet> findTweet(final TweetRequest request) {
         return twitterRepository.findTweet(request)
                 .map(TweetListResponse::getStatuses)
                 .flatMapMany(Flux::fromIterable)
@@ -45,12 +48,14 @@ public class TwitterSharedService {
     /**
      * ツイートをいいねする
      *
-     * @param id ツイートID
+     * @param tweetId ツイートID
+     * @param userId  ユーザID
      * @return TweetのOptional
      */
     @NonNull
-    public Mono<Optional<Tweet>> favoriteTweet(final String id, final TwitterUser twitterUser) {
-        return twitterRepository.favoriteTweet(id, twitterUser)
+    public Mono<Optional<Tweet>> favoriteTweet(final String tweetId, final String userId) {
+        return getTwitterOauth(userId, tweetId)
+                .flatMap(user -> twitterRepository.favoriteTweet(tweetId, user))
                 .map(this::buildTweet)
                 .map(Optional::of)
                 .onErrorResume(WebClientResponseException.class,
@@ -67,9 +72,42 @@ public class TwitterSharedService {
      * @return TweetのFlux
      */
     @NonNull
-    public Flux<Tweet> lookUpTweet(final List<String> idList, final TwitterUser twitterUser) {
+    public Flux<Tweet> lookUpTweet(final List<String> idList) {
         return twitterRepository.lookupTweet(idList)
                 .map(this::buildTweet);
+    }
+
+    /**
+     * ツイッターユーザ取得
+     *
+     * @param userId  userId
+     * @param tweetId tweetId
+     * @return ツイッターユーザ
+     */
+    @NonNull
+    private Mono<UserOauth> getTwitterOauth(final String userId, final String tweetId) {
+        return fireStoreRepository.getTwitterUser(userId, tweetId)
+                .map(this::buildUserOauth);
+    }
+
+    /**
+     * UserOauthを作成する
+     *
+     * @param udbResponse udbのAPIレスポンス
+     * @return 認証ドメイン
+     */
+    private UserOauth buildUserOauth(final UdbResponse udbResponse) {
+        final UdbResponse.OauthUserResponse oauthUserResponse = udbResponse.getOauthWithNullCheck();
+
+        return UserOauth.builder()
+                .oauthTimestamp(oauthUserResponse.getOauthTimestampWithNullCheck())
+                .oauthSignatureMethod(oauthUserResponse.getOauthSignatureMethodWithNullCheck())
+                .oauthVersion(oauthUserResponse.getOauthVersionWithNullCheck())
+                .oauthNonce(oauthUserResponse.getOauthNonceWithNullCheck())
+                .oauthConsumerKey(oauthUserResponse.getOauthConsumerKeyWithNullCheck())
+                .oauthToken(oauthUserResponse.getOauthTokenWithNullCheck())
+                .oauthSignature(oauthUserResponse.getOauthSignatureWithNullCheck())
+                .build();
     }
 
     /**
