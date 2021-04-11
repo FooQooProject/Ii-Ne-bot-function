@@ -1,14 +1,12 @@
 package com.fooqoo56.iine.bot.function.application.sharedservice
 
+import com.fooqoo56.iine.bot.function.domain.model.Oauth
 import com.fooqoo56.iine.bot.function.domain.model.Tweet
-import com.fooqoo56.iine.bot.function.domain.model.TwitterUser
 import com.fooqoo56.iine.bot.function.domain.model.User
+import com.fooqoo56.iine.bot.function.domain.repository.api.FireStoreRepository
 import com.fooqoo56.iine.bot.function.domain.repository.api.TwitterRepository
 import com.fooqoo56.iine.bot.function.infrastructure.api.dto.request.TweetRequest
-import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.SearchMetaDataResponse
-import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.TweetListResponse
-import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.TweetResponse
-import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.UserResponse
+import com.fooqoo56.iine.bot.function.infrastructure.api.dto.response.*
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -21,11 +19,29 @@ import spock.lang.Unroll
 class TwitterSharedServiceSpec extends Specification {
 
     private TwitterRepository twitterRepository
+    private FireStoreRepository fireStoreRepository
     private TwitterSharedService sut
 
     final setup() {
         twitterRepository = Mock(TwitterRepository)
-        sut = new TwitterSharedService(twitterRepository)
+        fireStoreRepository = Mock(FireStoreRepository) {
+            getTwitterUser(*_) >> Mono.just(
+                    UdbResponse.builder()
+                            .oauth(
+                                    UdbResponse.OauthUserResponse.builder()
+                                            .oauthTimestamp("12345")
+                                            .oauthSignatureMethod("HMAC-SHA1")
+                                            .oauthVersion("1.0")
+                                            .oauthNonce("oauthNonce")
+                                            .oauthConsumerKey("consumerKey")
+                                            .oauthToken("accessToken")
+                                            .oauthSignature("signature")
+                                            .build()
+                            )
+                            .build()
+            )
+        }
+        sut = new TwitterSharedService(twitterRepository, fireStoreRepository)
     }
 
     final "findTweet"() {
@@ -38,7 +54,7 @@ class TwitterSharedServiceSpec extends Specification {
         twitterRepository.findTweet(*_) >> getFindTweetMock()
 
         when:
-        final actual = sut.findTweet(request, Mock(TwitterUser)).collectList().block()
+        final actual = sut.findTweet(request).collectList().block()
 
         then:
         actual == expected
@@ -47,7 +63,7 @@ class TwitterSharedServiceSpec extends Specification {
     final "favoriteTweet"() {
         given:
         final expected = Optional.of(Tweet.builder()
-                .id("id")
+                .id("tweetId")
                 .text("text")
                 .user(User.builder()
                         .id("userId")
@@ -72,7 +88,7 @@ class TwitterSharedServiceSpec extends Specification {
         // mock作成
         twitterRepository.favoriteTweet(*_) >> Mono.just(
                 TweetResponse.builder()
-                        .id("id")
+                        .id("tweetId")
                         .text("text")
                         .user(UserResponse.builder()
                                 .id("userId")
@@ -95,7 +111,7 @@ class TwitterSharedServiceSpec extends Specification {
                         .build())
 
         when:
-        final actual = sut.favoriteTweet("id", Mock(TwitterUser)).block()
+        final actual = sut.favoriteTweet("tweetId", "userId").block()
 
         then:
         actual == expected
@@ -107,7 +123,7 @@ class TwitterSharedServiceSpec extends Specification {
         twitterRepository.favoriteTweet(*_) >> Mono.error(new WebClientResponseException(500, "", null, null, null))
 
         when:
-        final actual = sut.favoriteTweet("id", Mock(TwitterUser)).block()
+        final actual = sut.favoriteTweet("tweetId", "userId").block()
 
         then:
         actual == Optional.empty()
@@ -123,11 +139,63 @@ class TwitterSharedServiceSpec extends Specification {
         twitterRepository.lookupTweet(*_) >> getLookUpTweetMock()
 
         when:
-        final actual = sut.lookUpTweet(request, Mock(TwitterUser)).collectList().block()
+        final actual = sut.lookUpTweet(request).collectList().block()
 
         then:
         actual == expected
     }
+
+    final "getTwitterOauth"() {
+        given:
+        final expected = Oauth.builder()
+                .oauthTimestamp("12345")
+                .oauthSignatureMethod("HMAC-SHA1")
+                .oauthVersion("1.0")
+                .oauthNonce("oauthNonce")
+                .oauthConsumerKey("consumerKey")
+                .oauthToken("accessToken")
+                .oauthSignature("signature")
+                .build()
+
+        when:
+        final actual = sut.getTwitterOauth("userId", "tweetId").block()
+
+        then:
+        actual == expected
+    }
+
+    final "buildUserOauth"() {
+        given:
+        final udbResponse = UdbResponse.builder()
+                .oauth(
+                        UdbResponse.OauthUserResponse.builder()
+                                .oauthTimestamp("12345")
+                                .oauthSignatureMethod("HMAC-SHA1")
+                                .oauthVersion("1.0")
+                                .oauthNonce("oauthNonce")
+                                .oauthConsumerKey("consumerKey")
+                                .oauthToken("accessToken")
+                                .oauthSignature("signature")
+                                .build()
+                )
+                .build()
+        final expected = Oauth.builder()
+                .oauthTimestamp("12345")
+                .oauthSignatureMethod("HMAC-SHA1")
+                .oauthVersion("1.0")
+                .oauthNonce("oauthNonce")
+                .oauthConsumerKey("consumerKey")
+                .oauthToken("accessToken")
+                .oauthSignature("signature")
+                .build()
+
+        when:
+        final actual = sut.buildUserOauth(udbResponse)
+
+        then:
+        actual == expected
+    }
+
 
     @Unroll
     final "buildTweet - #caseName"() {

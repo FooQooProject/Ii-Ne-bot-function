@@ -1,9 +1,11 @@
 {
-  "user": {
-    "userId": "userId",
-    "apiKey": "apiKey",
-    "apiSecret": "apiSecret",
-    "accessToken": "accessToken",
-    "accessTokenSecret": "accessTokenSecret"
+  "oauth": {
+    "oauthTimestamp": "1618066055",
+    "oauthSignatureMethod": "HMAC-SHA1",
+    "oauthVersion": "1.0",
+    "oauthNonce": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    "oauthConsumerKey": "consumerKey",
+    "oauthToken": "accessToken",
+    "oauthSignature": "signature"
   }
 }
